@@ -88,6 +88,8 @@ public class G2_Main {
                 AffichageMatrice(graphe);
 
 // ------------ Vérifier les propriétés
+                System.out.printf("\nPoint d'entrée : %d\tPoint de sorties : %d\n", 0, graphe.getGraph_tach().size());
+                detectionCircuit(graphe);
 
 // ------------ Date au plus tot
 
@@ -235,14 +237,14 @@ public class G2_Main {
         System.out.println("\nMatrice des valeur\n");
 
         // Entête de la matrice
-        System.out.printf("%s%4d", "", 0);
+        System.out.printf("%4s%4d", "", 0);
         for (G2_Tache ta_li : graphe.getGraph_tach()) {
             System.out.printf("%4d", ta_li.getSommet());
         }
         System.out.println();
 
         // Sommet 0
-        System.out.printf("%4d", 0);
+        System.out.printf("%4d%4s", 0, '*');
         for (G2_Tache ta_co : graphe.getGraph_tach()) {
             if (ta_co.getContrainte().contains(0)) {
                 System.out.printf("%4d", 0);
@@ -254,7 +256,7 @@ public class G2_Main {
 
         // Tous les autres sommets
         for (G2_Tache ta_li : graphe.getGraph_tach()) {
-            System.out.printf("%4d", ta_li.getSommet());
+            System.out.printf("%4d%4s", ta_li.getSommet(), '*');
             for (G2_Tache ta_co : graphe.getGraph_tach()) {
                 if (ta_co.getContrainte().contains(ta_li.getSommet())) {
                     System.out.printf("%4d", ta_li.getSommet());
@@ -265,5 +267,9 @@ public class G2_Main {
             }
             System.out.println();
         }
+    }
+
+    private static void detectionCircuit(G2_Graphe graphe) {
+        System.out.println("coming soon");
     }
 }

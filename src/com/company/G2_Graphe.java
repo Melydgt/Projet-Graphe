@@ -16,6 +16,6 @@ public class G2_Graphe {
 
     @Override
     public String toString() {
-        return String.format("%s\n%8s | %8s | %15s\n", "Graphe :: ", "Tache", "délai", "contrainte") + graph_tach;
+        return String.format("%s\n%8s | %8s | %15s\n", "Graphe : ", "Tache", "délai", "contrainte") + graph_tach;
     }
 }

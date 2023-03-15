@@ -8,58 +8,123 @@ import com.google.gson.Gson;
 public class G2_Main {
 
     public static void main(String[] args) {
+        int choix=-1;
+        while (choix != 999) {
+            try {
+                // Variable
+                Scanner sc = new Scanner(System.in);
+                String name_file; // nom du fichier à ouvrir
+                String list_file = "./fichier_test/liste_en_mem.txt";
+                String mem_file = "./fichier_test/memoire.txt";
+                int i=1;
+                G2_Graphe graphe = null;
+
+                // Récuperer la liste des graphes en mémoire
+                File fileList = new File(list_file);
+                FileReader fr = new FileReader(fileList);   // Créer l'objet File Reader
+                BufferedReader br = new BufferedReader(fr); // Créer l'objet BufferedReader qui va lire chaque ligne
+                StringBuffer sb = new StringBuffer();
+                String line;
+
+                while((line = br.readLine()) != null) {
+                    sb.append("\t("+ (i++) + ") " +line);
+                    sb.append("\n");
+                }
+                fr.close();
+
+                System.out.println("Bonjour et bienvenue dans ce programme pour l'ordonnancement d'un graphe\ttape 999 pour exit");
+                System.out.println("Graphe sauvegarder :");
+                System.out.println(sb);
+                while (0>choix || choix>i) {
+                    try {
+                        System.out.println("Vous pouvez ouvrir un nouveau graphe(0) ou lire un graphe déja sauvegarder(1-" + (i-1) + ")");
+                        choix = sc.nextInt();
+                        if (choix == 999){
+                            System.exit(0);
+                        }
+                    } catch (InputMismatchException e) {
+                        System.out.println("Saisie non valide, recommencez");
+                        sc.nextLine(); // on libère la prochaine ligne
+                    }
+                }
+
+                sc.nextLine(); // on libère la prochaine ligne
+
+                if (choix == 0) {
+                    System.out.println("Entrer le nom du fichier que vous voulez lire");
+                    name_file = sc.nextLine();
+                    System.out.println("Nous ouvrons le fichier " + name_file + ".txt");
+
+                    if (new File("./fichier_test/" + name_file + ".txt").exists()) {
+                        graphe = lireGraphe(name_file);
+
+                        // SAVE sauvegarde du graphe à l'aide de GSON
+                        String jsonStrGraphe = new Gson().toJson(graphe);
+                        writeJsonToFile(jsonStrGraphe, name_file);
+                    }
+                    else {
+                        System.out.println("!!! Le fichier n'existe pas !!!");
+                    }
+                }
+                else {
+                    if (!fileEmpty(list_file)) {
+                        graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class);
+                    }
+                    else {
+                        System.out.println("!!! Aucun graphe en mémoire !!!");
+                    }
+                }
+
+                // AFFICHAGE
+                System.out.println("\t\tLoad Graphe");
+                System.out.println(graphe);
+
+
+
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static G2_Graphe lireGraphe(String name_file) {
+        G2_Graphe graphe = new G2_Graphe();             // On créer le graphe
+        String[] l;                                     // tab Str qui va accuellir la ligne du graphe temporairement
+        List<Integer> i = new ArrayList<>();            // tab qui va recevoir les contraintes
+        int j;                                          // index boucle for
+        int tache_final=1;                              // numéros de la tache fin
+
+        File file = new File("./fichier_test/" + name_file + ".txt");
+
         try {
-            // Variable
-            Scanner sc = new Scanner(System.in);
-            String name_file; // nom du fichier à ouvrir
-            G2_Graphe graphe = new G2_Graphe(); // On créer le graphe
-            String[] l; // tab Str qui va accuellir la ligne du graph temporairement
-            List<Integer> i = new ArrayList<>(); // tab qui va recevoir les conraintes
-            int j;
-            int tache_final=1;
-
-            System.out.println("Bonjour et bienvenue dans ce programme qui vous aides pour l'ordonnancement d'un graphe");
-            System.out.println("Entrer le nom du fichier que vous voulez lire");
-            name_file = sc.nextLine();
-            System.out.println("Nous ouvrons le fichier " + name_file + ".txt");
-
-            // Le fichier d'entrée par default
-            File file = new File("./fichier_test/" + name_file + ".txt");
-//            System.out.println("\n\n\tDefault table 1");
-//            File file = new File("./fichier_test/table 1.txt");
-
-            // Créer l'objet File Reader
             FileReader fr = new FileReader(file);
 
-            // Créer l'objet BufferedReader qui va lire chaque ligne
-            BufferedReader br = new BufferedReader(fr);
-//            StringBuffer sb = new StringBuffer();
+            BufferedReader br = new BufferedReader(fr); // Créer l'objet BufferedReader qui va lire chaque ligne
             String line;
 
-            // BOUCLE On lit les lignes et on les ajoutes au graphe
             while((line = br.readLine()) != null) {
-//                ajoute la ligne au buffer
-//                sb.append(line);
-//                sb.append("\n");
                 l = line.split(" ");
 
-                    // Ajout de l'état début=0 pour les taches qui n'ont pas de contrainte
+                // Ajout état début=0 pour les taches qui n'ont pas de contrainte
                 if (l.length == 2) {
                     i.add(0);
                 }
-                    // Ajout des contraintes à la tab i
+
+                // Ajout des contraintes (chaque taches) à la tab i
                 for (j = 2; j<(l.length); j++) {
                     i.add(Integer.parseInt(l[j]));
                 }
 
-                    // Trouver l'état le plus grd pour déterminer le nom de l'état fin
-                if (tache_final < Integer.parseInt(l[0])){
+                // Trouver l'état le plus grd pour le nom de l'état final
+                if (tache_final < Integer.parseInt(l[0])) {
                     tache_final = Integer.parseInt(l[0]);
                 }
 
-                    // Ajout des new taches
+                // Ajout des new taches
                 graphe.appendGraph(new G2_Tache(Integer.parseInt(l[0]), Integer.parseInt(l[1]), i));
-                i = new ArrayList<>();
+                i = new ArrayList<>();                  // RESET i
             }
 
             // BOUCLE Ajouter les predecesseurs de l'état final
@@ -76,21 +141,12 @@ public class G2_Main {
                 }
             }
             graphe.appendGraph(new G2_Tache(tache_final+1,0,i));
-
-
-            // AFFICHAGE
-            System.out.println("Contenu du graphe : \n début=0\tfin=" + (tache_final+1));
-            System.out.println(graphe);
             fr.close();
-
-            // SAVE sauvegarde du graphe à l'aide de GSON
-            String jsonStrGraphe = new Gson().toJson(graphe);
-            writeJsonToFile(jsonStrGraphe, name_file);
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return graphe;
     }
 
     private static void writeJsonToFile(String jsonStr, String name_graphe) {
@@ -107,9 +163,9 @@ public class G2_Main {
             PrintWriter jsonFile = new PrintWriter(file);
             PrintWriter jsonList = new PrintWriter(list_file);
 
-            if (!jsonStrFile.equals("")) { jsonFile.print(jsonStrFile + "\n" + jsonStr); }
+            if (!jsonStrFile.equals("")) { jsonFile.print(jsonStrFile + jsonStr); }
             else{ jsonFile.print(jsonStr); }
-            if (!jsonStrList.equals("")) { jsonList.print(jsonStrList + "\n" + name_graphe); }
+            if (!jsonStrList.equals("")) { jsonList.print(jsonStrList + name_graphe); }
             else { jsonList.print(name_graphe); }
 
 
@@ -125,7 +181,9 @@ public class G2_Main {
         String str = "";
         try {
             Scanner jsonFile = new Scanner(new File(file));
-            str = jsonFile.nextLine();
+            while (jsonFile.hasNextLine()) {
+                str += (jsonFile.nextLine() + "\n");
+            }
             jsonFile.close();
         }
         catch (IOException ioe) {
@@ -137,5 +195,21 @@ public class G2_Main {
     private static boolean fileEmpty(String name_file) {
         File file = new File(name_file);
         return file.length() == 0;
+    }
+
+    private static String readONElineFromFile(int n_line,String file) {
+        String str = "";
+        try {
+            int i=0;
+            Scanner jsonFile = new Scanner(new File(file));
+            while (jsonFile.hasNextLine() && (i++) != n_line) {
+                str = (jsonFile.nextLine());
+            }
+            jsonFile.close();
+        }
+        catch (IOException ioe) {
+            System.out.println("ERROR: " + ioe.getMessage());
+        }
+        return str;
     }
 }

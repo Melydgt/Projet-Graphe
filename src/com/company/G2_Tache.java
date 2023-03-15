@@ -1,27 +1,28 @@
 package com.company;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class G2_Tache {
-    private String etiquette;
+    private int etiquette;
     private int delai;
-    private int[] contrainte;
+    private List<Integer> contrainte;
 
-    public G2_Tache(String etiquette, int delai) {
-        this.etiquette = etiquette;
-        this.delai = delai;
-        this.contrainte = null;
-    }
-
-    public G2_Tache(String etiquette, int delai, int[] contrainte) {
+    public G2_Tache(int etiquette, int delai, List<Integer> contrainte) {
         this.etiquette = etiquette;
         this.delai = delai;
         this.contrainte = contrainte;
     }
 
+    public int getEtiquette() {
+        return etiquette;
+    }
+
+    public List<Integer> getContrainte() {
+        return contrainte;
+    }
+
     @Override
     public String toString() {
-        return String.format("\n%8s | %8d | %8s", etiquette, delai, Arrays.toString(contrainte));
+        return String.format("\n%8s | %8d | %15s", etiquette, delai, contrainte);
     }
 }

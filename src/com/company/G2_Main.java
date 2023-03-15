@@ -11,15 +11,16 @@ public class G2_Main {
         int choix=-1;
         while (choix != 999) {
             try {
-                // Variable
+// ------------ Variable
                 Scanner sc = new Scanner(System.in);
                 String name_file; // nom du fichier à ouvrir
                 String list_file = "./fichier_test/liste_en_mem.txt";
                 String mem_file = "./fichier_test/memoire.txt";
                 int i=1;
+                choix = -1;
                 G2_Graphe graphe = null;
 
-                // Récuperer la liste des graphes en mémoire
+// ------------ Récuperer la liste des graphes en mémoire
                 File fileList = new File(list_file);
                 FileReader fr = new FileReader(fileList);   // Créer l'objet File Reader
                 BufferedReader br = new BufferedReader(fr); // Créer l'objet BufferedReader qui va lire chaque ligne
@@ -32,7 +33,8 @@ public class G2_Main {
                 }
                 fr.close();
 
-                System.out.println("Bonjour et bienvenue dans ce programme pour l'ordonnancement d'un graphe\ttape 999 pour exit");
+// ------------ Accueil
+                System.out.println("\nBonjour et bienvenue dans ce programme pour l'ordonnancement d'un graphe\ttape 999 pour exit");
                 System.out.println("Graphe sauvegarder :");
                 System.out.println(sb);
                 while (0>choix || choix>i) {
@@ -50,6 +52,7 @@ public class G2_Main {
 
                 sc.nextLine(); // on libère la prochaine ligne
 
+// ------------ Choix d'utilisation
                 if (choix == 0) {
                     System.out.println("Entrer le nom du fichier que vous voulez lire");
                     name_file = sc.nextLine();
@@ -66,6 +69,7 @@ public class G2_Main {
                         System.out.println("!!! Le fichier n'existe pas !!!");
                     }
                 }
+// ------------ Choix d'utilisation
                 else {
                     if (!fileEmpty(list_file)) {
                         graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class);
@@ -75,11 +79,25 @@ public class G2_Main {
                     }
                 }
 
-                // AFFICHAGE
+
+// ------------ AFFICHAGE
                 System.out.println("\t\tLoad Graphe");
                 System.out.println(graphe);
 
+// ------------ Matrice des valeurs
+                AffichageMatrice(graphe);
 
+// ------------ Vérifier les propriétés
+
+// ------------ Date au plus tot
+
+// ------------ Date au plus tard
+
+// ------------ Calendrier
+
+// ------------ Marge
+
+// ------------ Chemin critique
 
             }
             catch(IOException e)
@@ -132,12 +150,12 @@ public class G2_Main {
                 Iterator<G2_Tache> k = graphe.getGraph_tach().iterator();
                 boolean existe = false;
                 while(!existe && k.hasNext()) {
-                    if (k.next().getContrainte().contains(ta.getEtiquette())) {
+                    if (k.next().getContrainte().contains(ta.getSommet())) {
                         existe = true;
                     }
                 }
                 if (!existe) {
-                    i.add(ta.getEtiquette());
+                    i.add(ta.getSommet());
                 }
             }
             graphe.appendGraph(new G2_Tache(tache_final+1,0,i));
@@ -211,5 +229,41 @@ public class G2_Main {
             System.out.println("ERROR: " + ioe.getMessage());
         }
         return str;
+    }
+
+    private static void AffichageMatrice(G2_Graphe graphe) {
+        System.out.println("\nMatrice des valeur\n");
+
+        // Entête de la matrice
+        System.out.printf("%s%4d", "", 0);
+        for (G2_Tache ta_li : graphe.getGraph_tach()) {
+            System.out.printf("%4d", ta_li.getSommet());
+        }
+        System.out.println();
+
+        // Sommet 0
+        System.out.printf("%4d", 0);
+        for (G2_Tache ta_co : graphe.getGraph_tach()) {
+            if (ta_co.getContrainte().contains(0)) {
+                System.out.printf("%4d", 0);
+            } else {
+                System.out.printf("%4s", '*');
+            }
+        }
+        System.out.println();
+
+        // Tous les autres sommets
+        for (G2_Tache ta_li : graphe.getGraph_tach()) {
+            System.out.printf("%4d", ta_li.getSommet());
+            for (G2_Tache ta_co : graphe.getGraph_tach()) {
+                if (ta_co.getContrainte().contains(ta_li.getSommet())) {
+                    System.out.printf("%4d", ta_li.getSommet());
+                }
+                else {
+                    System.out.printf("%4s", '*');
+                }
+            }
+            System.out.println();
+        }
     }
 }

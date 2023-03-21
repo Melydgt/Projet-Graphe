@@ -89,7 +89,11 @@ public class G2_Main {
 
 // ------------ Vérifier les propriétés
                 System.out.printf("\nPoint d'entrée : %d\tPoint de sorties : %d\n", 0, graphe.getGraph_tach().size());
+                System.out.println("Présence de circuit dans le graphe ?");
+
                 detectionCircuit(graphe);
+                System.out.println(graphe);
+
 
 // ------------ Date au plus tot
 
@@ -270,6 +274,51 @@ public class G2_Main {
     }
 
     private static void detectionCircuit(G2_Graphe graphe) {
-        System.out.println("coming soon");
+//        System.out.println("coming soon");
+
+//        System.out.println("Find 0 in contrainte");
+        for (G2_Tache ta_co : graphe.getGraph_tach()) {
+            if (ta_co.getContrainte().contains(0)) {
+                ta_co.getContrainte().remove((Integer)0);
+            }
+        }
+
+        while (graphe.getGraph_tach().size() != 0 && !contrainteExiste(graphe)) {
+            System.out.println("Supprimer les entrées :");
+//            System.out.println("graphe.getGraph_tach().size() " + graphe.getGraph_tach().size());
+            for (int i=0; i<graphe.getGraph_tach().size(); i++) {
+                System.out.println("\t\t\tTEST Sommet = " + graphe.getGraph_tach().get(i).getSommet());
+//                System.out.println("Si - le sommet n'a pas de contrainte = " + graphe.getGraph_tach().get(i).getContrainte().isEmpty());
+                if (graphe.getGraph_tach().get(i).getContrainte().isEmpty()) {
+                    for (G2_Tache ta_co : graphe.getGraph_tach()) {
+    //                    if (graphe.getGraph_tach().get(i).getContrainte().isEmpty()) {
+//                            System.out.println("Si - le sommet est compris dans les contraintes = " + ta_co.getContrainte().contains(graphe.getGraph_tach().get(i).getSommet()) + ta_co.getContrainte());
+                            if (ta_co.getContrainte().contains(graphe.getGraph_tach().get(i).getSommet())) {
+                                System.out.println("REMOVE - " + graphe.getGraph_tach().get(i).getSommet() + " FROM " + ta_co.getSommet());
+                                ta_co.getContrainte().remove((Integer)graphe.getGraph_tach().get(i).getSommet());
+                            }
+    //                    }
+                    }
+                    System.out.println("on supprime le sommet ..." + graphe.getGraph_tach().get(i));
+                    graphe.getGraph_tach().remove(i);
+                    i--;
+                }
+            }
+        }
+        if (contrainteExiste(graphe)) {
+            System.out.println("Le graphe contient un circuit (boucle)");
+        }
+        else {
+            System.out.println("Le graphe NE contient PAS de circuit");
+        }
+    }
+
+    public static boolean contrainteExiste(G2_Graphe graphe) {
+        for (G2_Tache tache : graphe.getGraph_tach()) {
+            if (tache.getContrainte().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

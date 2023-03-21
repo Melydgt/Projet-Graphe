@@ -52,7 +52,7 @@ public class G2_Main {
 
                 sc.nextLine(); // on libère la prochaine ligne
 
-// ------------ Choix d'utilisation
+// ------------ Choix d'utilisation (Etape 1...)
                 if (choix == 0) {
                     System.out.println("Entrer le nom du fichier que vous voulez lire");
                     name_file = sc.nextLine();
@@ -69,7 +69,7 @@ public class G2_Main {
                         System.out.println("!!! Le fichier n'existe pas !!!");
                     }
                 }
-// ------------ Choix d'utilisation
+// ------------ Choix d'utilisation (...Etape 1)
                 else {
                     if (!fileEmpty(list_file)) {
                         graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class);
@@ -80,30 +80,38 @@ public class G2_Main {
                 }
 
 
-// ------------ AFFICHAGE
+// ------------ AFFICHAGE (Etape 2) a continuer ...
                 System.out.println("\t\tLoad Graphe");
                 System.out.println(graphe);
 
-// ------------ Matrice des valeurs
+// ------------ Matrice des valeurs (Etape 2)
                 AffichageMatrice(graphe);
 
-// ------------ Vérifier les propriétés
+// ------------ Vérifier les propriétés (Etape 3)
                 System.out.printf("\nPoint d'entrée : %d\tPoint de sorties : %d\n", 0, graphe.getGraph_tach().size());
                 System.out.println("Présence de circuit dans le graphe ?");
 
                 detectionCircuit(graphe);
                 System.out.println(graphe);
 
+                if (!arcNeg(graphe)) {
+                    System.out.println("Le circuit NE contient PAS d'arc négatif");
+                }
+                else {
+                    System.out.println("Le circuit contient un ou plusieurs arc(s) négatif");
+                }
 
-// ------------ Date au plus tot
+// ------------ Calcule du rangs (Etape 4)
 
-// ------------ Date au plus tard
+// ------------ Date au plus tot (Etape 5)
 
-// ------------ Calendrier
+// ------------ Date au plus tard (Etape 5)
 
-// ------------ Marge
+// ------------ Calendrier /affichage (Etape 5)
 
-// ------------ Chemin critique
+// ------------ Marge (Etape 6)
+
+// ------------ Chemin critique (Etape 6)
 
             }
             catch(IOException e)
@@ -136,7 +144,8 @@ public class G2_Main {
                     i.add(0);
                 }
 
-                // Ajout des contraintes (chaque taches) à la tab i
+                // Ajout des contraintes (chaque taches) à la tab i,
+                // donc i est le tab de contrainte à ajouter à chaque taches, reset à chaque itération
                 for (j = 2; j<(l.length); j++) {
                     i.add(Integer.parseInt(l[j]));
                 }
@@ -237,6 +246,7 @@ public class G2_Main {
         return str;
     }
 
+
     private static void AffichageMatrice(G2_Graphe graphe) {
         System.out.println("\nMatrice des valeur\n");
 
@@ -273,10 +283,10 @@ public class G2_Main {
         }
     }
 
-    private static void detectionCircuit(G2_Graphe graphe) {
-//        System.out.println("coming soon");
 
+    private static void detectionCircuit(G2_Graphe graphe) {
 //        System.out.println("Find 0 in contrainte");
+//        G2_Graphe graphTemp = new G2_Graphe(graphe.getGraph_tach());
         for (G2_Tache ta_co : graphe.getGraph_tach()) {
             if (ta_co.getContrainte().contains(0)) {
                 ta_co.getContrainte().remove((Integer)0);
@@ -320,5 +330,14 @@ public class G2_Main {
             }
         }
         return true;
+    }
+
+    public static boolean arcNeg(G2_Graphe graphe) {
+        for (G2_Tache arc_neg : graphe.getGraph_tach()) {
+            if (arc_neg.getDelai() < 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }

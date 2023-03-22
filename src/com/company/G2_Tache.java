@@ -17,8 +17,16 @@ public class G2_Tache {
         return sommet;
     }
 
+    public int getDelai() {
+        return delai;
+    }
+
     public List<Integer> getContrainte() {
         return contrainte;
+    }
+
+    public void setContrainte(List<Integer> contrainte) {
+        this.contrainte = contrainte;
     }
 
     @Override

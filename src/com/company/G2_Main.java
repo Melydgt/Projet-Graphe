@@ -90,22 +90,27 @@ public class G2_Main {
 // ------------ Vérifier les propriétés (Etape 3)
                 System.out.printf("\nPoint d'entrée : %d\tPoint de sorties : %d\n\n", 0, graphe.getGraph_tach().size());
                 System.out.println("Présence de circuit dans le graphe ?");
+/*                detectionCircuit(graphe);
+                System.out.println(graphe);
 
-//                detectionCircuit(graphe);
-//                System.out.println(graphe);
-
-//                if (!arcNeg(graphe)) {
-//                    System.out.println("Le circuit NE contient PAS d'arc négatif");
-//                } else {
-//                    System.out.println("Le circuit contient un ou plusieurs arc(s) négatif");
-//                }
-
+                if (!arcNeg(graphe)) {
+                    System.out.println("Le circuit NE contient PAS d'arc négatif");
+                } else {
+                    System.out.println("Le circuit contient un ou plusieurs arc(s) négatif");
+                }*/
 
 // ------------ Calcule du rangs (Etape 4)
                 if (!detectionCircuit(graphe) && !arcNeg(graphe)) {
                     System.out.println("Le circuit NE contient PAS d'arc négatif");
+                    graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+                    // RANG ...
+                    rangs(graphe);
                 } else {
-                    System.out.println("Le circuit contient un ou plusieurs arc(s) négatif");
+                    System.out.println(graphe);
+                    if (arcNeg(graphe)) {
+                        System.out.println("Le circuit contient un ou plusieurs arc(s) négatif");
+                    }
+                    // escape return au debut
                 }
 
 // ------------ Date au plus tot (Etape 5)
@@ -310,7 +315,7 @@ public class G2_Main {
             }
         }
 
-        while (graphe.getGraph_tach().size() != 0 && !contrainteExiste(graphe)) {
+        while (graphe.getGraph_tach().size() != 0 && contrainteExiste(graphe)) {
             System.out.println("* Detection de circuit\n* Méthode d'élimination des points d'entrée");
             for (int i=0; i<graphe.getGraph_tach().size(); i++) {
                 System.out.println("\t\t\tTEST Sommet = " + graphe.getGraph_tach().get(i).getSommet());
@@ -332,7 +337,7 @@ public class G2_Main {
                 }
             }
         }
-        if (contrainteExiste(graphe)) {
+        if (graphe.getGraph_tach().size() != 0) {
             System.out.println("Le graphe contient un circuit (boucle)");
             return true;
         }
@@ -344,11 +349,11 @@ public class G2_Main {
 
     public static boolean contrainteExiste(G2_Graphe graphe) {
         for (G2_Tache tache : graphe.getGraph_tach()) {
-            if (tache.getContrainte().isEmpty()) {
-                return false;
+            if (!tache.getContrainte().isEmpty()) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public static boolean arcNeg(G2_Graphe graphe) {
@@ -358,5 +363,78 @@ public class G2_Main {
             }
         }
         return false;
+    }
+
+    private static void rangs(G2_Graphe graphe) {
+        // on ne compte pas le sommet final
+        int[][] TabRang = new int[graphe.getGraph_tach().size()][2];
+
+        int i = 0; // la ligne ou on est dans le tableau
+
+        for (G2_Tache ta_co : graphe.getGraph_tach()) {
+            if (ta_co.getContrainte().contains(0)) {
+                ta_co.getContrainte().remove((Integer)0);
+                TabRang[i][0] = ta_co.getSommet();
+                TabRang[i++][1] = 0;
+            }
+        }
+
+        System.out.println("* Calcul de rang\n");
+        int line_max = i;
+        while (contrainteExiste(graphe)) {
+            for (int j = 0; j < line_max; j++) { // Parcourt des sommets qui ont déja des rangs
+                for (G2_Tache ta_co : graphe.getGraph_tach()) {
+
+                    if (ta_co.getContrainte().contains(TabRang[j][0])) {
+//                        System.out.print(TabRang[j][0] + " existe dans ");
+//                        System.out.println(ta_co.getContrainte() + " ??? " + "sommet=" + ta_co.getSommet());
+                        if (findSommetInGraphe(graphe,TabRang[j][0]).getContrainte().size() == 0) {
+                            ta_co.getContrainte().remove((Integer) TabRang[j][0]);
+                        }
+                        // vérifier si le rang existe sinon ajouter +1 a la ligne max
+                        int temp = findRangInTab(TabRang, ta_co.getSommet());
+                        if (temp == -1) {
+//                            System.out.println("on ajoute le sommet" + ta_co.getSommet() + " rang : " + (TabRang[j][1] + 1));
+                            TabRang[i][0] = ta_co.getSommet();
+                            TabRang[i++][1] = (TabRang[j][1] + 1);
+                        }
+                        // vérifier si le rang actuel est supérieur à celui qu'on veut ajouter
+                        else {
+                            if (TabRang[temp][1] <= TabRang[j][1]+1) {
+//                                System.out.println("on met à jour le rang de " + TabRang[temp][0] + " new rang : " + (TabRang[j][1] + 1));
+                                TabRang[temp][1] = (TabRang[j][1] + 1);
+                            }
+                        }
+                    }
+                }
+                line_max = i;
+//                i = line_max;
+            }
+        }
+
+        System.out.println("Liste des rangs des sommets");
+        for (int k = 0; k < TabRang.length; k++) {
+            System.out.printf("Sommet_%-2d  Rang_%-2d\n", TabRang[k][0], TabRang[k][1]);
+        }
+    }
+
+    private static int findRangInTab (int[][] TabRang, int sommet) {
+        int index=0;
+        for (int[] ligneRang : TabRang) {
+            if (ligneRang[0] == sommet) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
+    private static G2_Tache findSommetInGraphe (G2_Graphe graphe, int sommet) {
+        for (int index=0; index<graphe.getGraph_tach().size(); index++) {
+            if (sommet == graphe.getGraph_tach().get(index).getSommet()) {
+                return graphe.getGraph_tach().get(index);
+            }
+        }
+        return null;
     }
 }

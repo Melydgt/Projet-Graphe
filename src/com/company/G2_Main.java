@@ -368,7 +368,7 @@ public class G2_Main {
     private static void rangs(G2_Graphe graphe) {
         // on ne compte pas le sommet final
         int Sfinal = graphe.getGraph_tach().size();
-        int[][] TabRang = new int[Sfinal-1][2];
+        int[][] TabRang = new int[Sfinal-112][2];
 
         int i = 0; // la ligne ou on est dans le tableau
 

@@ -367,7 +367,8 @@ public class G2_Main {
 
     private static void rangs(G2_Graphe graphe) {
         // on ne compte pas le sommet final
-        int[][] TabRang = new int[graphe.getGraph_tach().size()][2];
+        int Sfinal = graphe.getGraph_tach().size();
+        int[][] TabRang = new int[Sfinal-1][2];
 
         int i = 0; // la ligne ou on est dans le tableau
 
@@ -395,8 +396,10 @@ public class G2_Main {
                         int temp = findRangInTab(TabRang, ta_co.getSommet());
                         if (temp == -1) {
 //                            System.out.println("on ajoute le sommet" + ta_co.getSommet() + " rang : " + (TabRang[j][1] + 1));
-                            TabRang[i][0] = ta_co.getSommet();
-                            TabRang[i++][1] = (TabRang[j][1] + 1);
+                            if (ta_co.getSommet() != Sfinal) {
+                                TabRang[i][0] = ta_co.getSommet();
+                                TabRang[i++][1] = (TabRang[j][1] + 1);
+                            }
                         }
                         // vérifier si le rang actuel est supérieur à celui qu'on veut ajouter
                         else {

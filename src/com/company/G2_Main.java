@@ -53,7 +53,7 @@ public class G2_Main {
 
                 sc.nextLine(); // on libère la prochaine ligne
 
-// ------------ Choix d'utilisation (Etape 1...)
+// 1 ------------ Choix d'utilisation (Etape 1...)
                 if (choix == 0) {
                     System.out.println("Entrer le nom du fichier que vous voulez lire");
                     name_file = sc.nextLine();
@@ -69,7 +69,7 @@ public class G2_Main {
                         System.out.println("!!! Le fichier n'existe pas !!!");
                     }
                 }
-// ------------ Choix d'utilisation (...Etape 1)
+// 1 ------------ Choix d'utilisation (...Etape 1)
                 else {
                     if (!fileEmpty(list_file)) {
                         graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class);
@@ -79,15 +79,15 @@ public class G2_Main {
                 }
 
 
-// ------------ AFFICHAGE (Etape 2)
+// 2 ------------ AFFICHAGE (Etape 2)
                 System.out.println("\t\t** Load Graphe **");
                 System.out.println(graphe);
                 AffichageGraphe(graphe);
 
-// ------------ Matrice des valeurs (Etape 2)
+// 2 ------------ Matrice des valeurs (Etape 2)
                 AffichageMatrice(graphe);
 
-// ------------ Vérifier les propriétés (Etape 3)
+// 3 ------------ Vérifier les propriétés (Etape 3)
                 System.out.printf("\nPoint d'entrée : %d\tPoint de sorties : %d\n\n", 0, graphe.getGraph_tach().size());
                 System.out.println("Présence de circuit dans le graphe ?");
 /*                detectionCircuit(graphe);
@@ -99,12 +99,27 @@ public class G2_Main {
                     System.out.println("Le circuit contient un ou plusieurs arc(s) négatif");
                 }*/
 
-// ------------ Calcule du rangs (Etape 4)
                 if (!detectionCircuit(graphe) && !arcNeg(graphe)) {
                     System.out.println("Le circuit NE contient PAS d'arc négatif");
                     graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
-                    // RANG ...
+
+// 4 ------------ Calcule du rangs (Etape 4)
                     rangs(graphe);
+                    graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+
+// 5 ------------ Date au plus tot (Etape 5)
+// 5 ------------ Date au plus tard (Etape 5)
+// 5 ------------ Calendrier /affichage (Etape 5)
+                    System.out.println("le graphe est cassé ?" + graphe);
+                    calendrier(graphe, choix, mem_file);
+
+
+// 6 ------------ Marge (Etape 6)
+
+
+// 6 ------------ Chemin critique (Etape 6)
+
+
                 } else {
                     System.out.println(graphe);
                     if (arcNeg(graphe)) {
@@ -112,17 +127,6 @@ public class G2_Main {
                     }
                     // escape return au debut
                 }
-
-// ------------ Date au plus tot (Etape 5)
-
-// ------------ Date au plus tard (Etape 5)
-
-// ------------ Calendrier /affichage (Etape 5)
-
-// ------------ Marge (Etape 6)
-
-// ------------ Chemin critique (Etape 6)
-
             }
             catch(IOException e)
             {
@@ -365,10 +369,11 @@ public class G2_Main {
         return false;
     }
 
+    // Revoir ... dans le désordre
     private static void rangs(G2_Graphe graphe) {
         // on ne compte pas le sommet final
         int Sfinal = graphe.getGraph_tach().size();
-        int[][] TabRang = new int[Sfinal-112][2];
+        int[][] TabRang = new int[Sfinal-1][2];
 
         int i = 0; // la ligne ou on est dans le tableau
 
@@ -393,7 +398,7 @@ public class G2_Main {
                             ta_co.getContrainte().remove((Integer) TabRang[j][0]);
                         }
                         // vérifier si le rang existe sinon ajouter +1 a la ligne max
-                        int temp = findRangInTab(TabRang, ta_co.getSommet());
+                        int temp = findRangCalendarInTab(TabRang, ta_co.getSommet());
                         if (temp == -1) {
 //                            System.out.println("on ajoute le sommet" + ta_co.getSommet() + " rang : " + (TabRang[j][1] + 1));
                             if (ta_co.getSommet() != Sfinal) {
@@ -421,7 +426,7 @@ public class G2_Main {
         }
     }
 
-    private static int findRangInTab (int[][] TabRang, int sommet) {
+    private static int findRangCalendarInTab(int[][] TabRang, int sommet) {
         int index=0;
         for (int[] ligneRang : TabRang) {
             if (ligneRang[0] == sommet) {
@@ -439,5 +444,80 @@ public class G2_Main {
             }
         }
         return null;
+    }
+
+    private static void calendrier(G2_Graphe graphe, int choix, String mem_file) {
+        System.out.println("coming soon");
+        int[][] Calendrier = new int[graphe.getGraph_tach().size()+1][3];
+        int i = 1;
+
+        // Début
+        Calendrier[0][0] = 0; // Sommet
+        Calendrier[0][1] = 0; // Date au plus tot
+        Calendrier[0][2] = 0; // Date au plus tard
+
+        // dans le calendrier on met tous les sommets
+        for (G2_Tache tache : graphe.getGraph_tach()) {
+            Calendrier[i][0] = tache.getSommet();
+            // on en profite si la tache à pour contrainte 0 on lui met date debut = 0
+            if (tache.getContrainte().contains(0)) {
+                Calendrier[i][1] = 0;
+                tache.getContrainte().remove((Integer)0);
+            }
+            i++;
+        }
+// ------------ Date au plus tot (Etape 5)
+        while (contrainteExiste(graphe)) {
+            for (int[] ligneSommet : Calendrier) {
+                System.out.printf("Test Sommet %d %d %d\n", ligneSommet[0], ligneSommet[1], ligneSommet[2]);
+                for (G2_Tache tache : graphe.getGraph_tach()) {
+                    int Pred = findRangCalendarInTab(Calendrier, ligneSommet[0]);
+                    int Actu = findRangCalendarInTab(Calendrier, tache.getSommet());
+                    System.out.printf("\nLe sommet %d existe dans contrainte " + tache.getContrainte() + " de S%d ??? \n", ligneSommet[0], tache.getSommet());
+                    if (tache.getContrainte().contains(ligneSommet[0])) {
+                        int delaisPred = findSommetInGraphe(graphe,ligneSommet[0]).getDelai();
+                        System.out.println("Calendrier[Actu][1] < (Calendrier[Pred][1] + delaisPred) " + Calendrier[Actu][1] + " _ " + (Calendrier[Pred][1] + delaisPred));
+                        if (Calendrier[Actu][1] < (Calendrier[Pred][1] + delaisPred)) {
+                            Calendrier[Actu][1] = Calendrier[Pred][1] + delaisPred;
+                        }
+                        if (findSommetInGraphe(graphe,Calendrier[Pred][0]).getContrainte().size() == 0) {
+                            tache.getContrainte().remove((Integer) Calendrier[Pred][0]);
+                        }
+                    }
+                }
+            }
+        }
+
+        graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+// 5 ------------ Date au plus tard (Etape 5)
+        /*while (contrainteExiste(graphe)) {
+            for (int[] ligneSommet : Calendrier) {
+                System.out.printf("Test Sommet %d %d %d\n", ligneSommet[0], ligneSommet[1], ligneSommet[2]);
+                for (G2_Tache tache : graphe.getGraph_tach()) {
+                    int Pred = findRangCalendarInTab(Calendrier, ligneSommet[0]);
+                    int Actu = findRangCalendarInTab(Calendrier, tache.getSommet());
+                    System.out.printf("\nLe sommet %d existe dans contrainte " + tache.getContrainte() + " de S%d ??? \n", ligneSommet[0], tache.getSommet());
+                    if (tache.getContrainte().contains(ligneSommet[0])) {
+                        int delaisPred = findSommetInGraphe(graphe,ligneSommet[0]).getDelai();
+                        System.out.println("Calendrier[Actu][1] < (Calendrier[Pred][1] + delaisPred) " + Calendrier[Actu][1] + " _ " + (Calendrier[Pred][1] + delaisPred));
+                        if (Calendrier[Actu][1] < (Calendrier[Pred][1] + delaisPred)) {
+                            Calendrier[Actu][1] = Calendrier[Pred][1] + delaisPred;
+                        }
+                        if (findSommetInGraphe(graphe,Calendrier[Pred][0]).getContrainte().size() == 0) {
+                            tache.getContrainte().remove((Integer) Calendrier[Pred][0]);
+                        }
+                    }
+                }
+            }
+        }*/
+
+
+        System.out.println("Calendrier :");
+        for (int k = 0; k < Calendrier.length; k++) {
+            System.out.printf("%6s %8s %9s\n", "Sommet", "Date+tot", "Date+tard");
+            System.out.printf("%6d %8d %9d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2]);
+        }
+
+
     }
 }

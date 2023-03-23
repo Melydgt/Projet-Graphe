@@ -78,9 +78,8 @@ public class G2_Main {
                     }
                 }
 
-
 // 2 ------------ AFFICHAGE (Etape 2)
-                System.out.println("\t\t** Load Graphe **");
+                System.out.println("\t\t*** Load Graphe ***");
                 System.out.println(graphe);
                 AffichageGraphe(graphe);
 
@@ -90,14 +89,6 @@ public class G2_Main {
 // 3 ------------ Vérifier les propriétés (Etape 3)
                 System.out.printf("\nPoint d'entrée : %d\tPoint de sorties : %d\n\n", 0, graphe.getGraph_tach().size());
                 System.out.println("Présence de circuit dans le graphe ?");
-/*                detectionCircuit(graphe);
-                System.out.println(graphe);
-
-                if (!arcNeg(graphe)) {
-                    System.out.println("Le circuit NE contient PAS d'arc négatif");
-                } else {
-                    System.out.println("Le circuit contient un ou plusieurs arc(s) négatif");
-                }*/
 
                 if (!detectionCircuit(graphe) && !arcNeg(graphe)) {
                     System.out.println("Le circuit NE contient PAS d'arc négatif");
@@ -110,9 +101,7 @@ public class G2_Main {
 // 5 ------------ Date au plus tot (Etape 5)
 // 5 ------------ Date au plus tard (Etape 5)
 // 5 ------------ Calendrier /affichage (Etape 5)
-                    System.out.println("le graphe est cassé ?" + graphe);
                     calendrier(graphe, choix, mem_file);
-
 
 // 6 ------------ Marge (Etape 6)
 
@@ -262,7 +251,7 @@ public class G2_Main {
 
 
     private static void AffichageGraphe(G2_Graphe graphe) {
-        System.out.printf("\n* Affichage chemin du graphe\n%11s = %-3s\n", "Chemins  ", "Délais");
+        System.out.printf("\n\t\t*** Affichage chemin du graphe ***\n%11s = %-3s\n", "Chemins  ", "Délais");
         int countArc=0;
         for (G2_Tache sommet : graphe.getGraph_tach()) {
             for (int i = 0; i < sommet.getContrainte().size(); i++) {
@@ -274,7 +263,7 @@ public class G2_Main {
     }
 
     private static void AffichageMatrice(G2_Graphe graphe) {
-        System.out.println("\n* Matrice des valeur\n");
+        System.out.println("\n\t\t*** Matrice des valeur ***\n");
 
         // Entête de la matrice
         System.out.printf("%4s%4d", "", 0);
@@ -319,10 +308,10 @@ public class G2_Main {
             }
         }
 
+        System.out.println("\n\t\t*** Detection de circuit ***\n\t* Méthode d'élimination des points d'entrée *\n");
         while (graphe.getGraph_tach().size() != 0 && contrainteExiste(graphe)) {
-            System.out.println("* Detection de circuit\n* Méthode d'élimination des points d'entrée");
             for (int i=0; i<graphe.getGraph_tach().size(); i++) {
-                System.out.println("\t\t\tTEST Sommet = " + graphe.getGraph_tach().get(i).getSommet());
+                System.out.println("\t\t\t\t\t\tTEST Sommet = " + graphe.getGraph_tach().get(i).getSommet());
                 if (graphe.getGraph_tach().get(i).getContrainte().isEmpty()) {
                     System.out.println("Point d'entrée : " + graphe.getGraph_tach().get(i).getSommet());
                     for (G2_Tache ta_co : graphe.getGraph_tach()) {
@@ -332,7 +321,7 @@ public class G2_Main {
                             }
     //                    }
                     }
-                    System.out.println("Suppression des points d'entrée");
+                    System.out.print("Suppression des points d'entrée. ");
                     graphe.getGraph_tach().remove(i);
                     i--;
                     if (graphe.getGraph_tach().size() != 0) {
@@ -341,7 +330,8 @@ public class G2_Main {
                 }
             }
         }
-        if (graphe.getGraph_tach().size() != 0) {
+//        if (graphe.getGraph_tach().size() != 0) {
+        if (!contrainteExiste(graphe) && graphe.getGraph_tach().size() != 0) {
             System.out.println("Le graphe contient un circuit (boucle)");
             return true;
         }
@@ -351,7 +341,20 @@ public class G2_Main {
         }
     }
 
+    // return true if just one contrainte is empty
+    // return false else
     public static boolean contrainteExiste(G2_Graphe graphe) {
+        for (G2_Tache tache : graphe.getGraph_tach()) {
+            if (tache.getContrainte().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // return true if just one contrainte is not empty
+    // return false else
+    public static boolean contrainteExiste2(G2_Graphe graphe) {
         for (G2_Tache tache : graphe.getGraph_tach()) {
             if (!tache.getContrainte().isEmpty()) {
                 return true;
@@ -385,23 +388,22 @@ public class G2_Main {
             }
         }
 
-        System.out.println("* Calcul de rang\n");
+        System.out.println("\n\t\t*** Calcul de rang ***\n");
         int line_max = i;
-        while (contrainteExiste(graphe)) {
+        while (contrainteExiste2(graphe)) {
             for (int j = 0; j < line_max; j++) { // Parcourt des sommets qui ont déja des rangs
                 for (G2_Tache ta_co : graphe.getGraph_tach()) {
 
                     if (ta_co.getContrainte().contains(TabRang[j][0])) {
-//                        System.out.print(TabRang[j][0] + " existe dans ");
-//                        System.out.println(ta_co.getContrainte() + " ??? " + "sommet=" + ta_co.getSommet());
                         if (findSommetInGraphe(graphe,TabRang[j][0]).getContrainte().size() == 0) {
+                            System.out.printf("Le sommet %d est un prédécesseur de S%d et il n'a plus d'autre antécédents on supprime le sommet % des contraintes\n", TabRang[j][0], ta_co.getSommet(), TabRang[j][0]);
                             ta_co.getContrainte().remove((Integer) TabRang[j][0]);
                         }
                         // vérifier si le rang existe sinon ajouter +1 a la ligne max
                         int temp = findRangCalendarInTab(TabRang, ta_co.getSommet());
                         if (temp == -1) {
-//                            System.out.println("on ajoute le sommet" + ta_co.getSommet() + " rang : " + (TabRang[j][1] + 1));
                             if (ta_co.getSommet() != Sfinal) {
+                                System.out.printf("S%d prends le rang : %d\n", ta_co.getSommet(), (TabRang[j][1] + 1));
                                 TabRang[i][0] = ta_co.getSommet();
                                 TabRang[i++][1] = (TabRang[j][1] + 1);
                             }
@@ -409,7 +411,7 @@ public class G2_Main {
                         // vérifier si le rang actuel est supérieur à celui qu'on veut ajouter
                         else {
                             if (TabRang[temp][1] <= TabRang[j][1]+1) {
-//                                System.out.println("on met à jour le rang de " + TabRang[temp][0] + " new rang : " + (TabRang[j][1] + 1));
+                                System.out.printf("S%d prends le nouveaux rang : %d\n", TabRang[temp][0], (TabRang[j][1] + 1));
                                 TabRang[temp][1] = (TabRang[j][1] + 1);
                             }
                         }
@@ -421,8 +423,9 @@ public class G2_Main {
         }
 
         System.out.println("Liste des rangs des sommets");
+        System.out.printf("%-5s %-4s\n", "Sommet", "Rang");
         for (int k = 0; k < TabRang.length; k++) {
-            System.out.printf("Sommet_%-2d  Rang_%-2d\n", TabRang[k][0], TabRang[k][1]);
+            System.out.printf("S%-5d %-4d\n", TabRang[k][0], TabRang[k][1]);
         }
     }
 
@@ -447,7 +450,6 @@ public class G2_Main {
     }
 
     private static void calendrier(G2_Graphe graphe, int choix, String mem_file) {
-        System.out.println("coming soon");
         int[][] Calendrier = new int[graphe.getGraph_tach().size()+1][3];
         int i = 1;
 
@@ -466,18 +468,23 @@ public class G2_Main {
             }
             i++;
         }
+
+        System.out.println("\n\t\t*** Calendrier ***\n");
+        System.out.println("\t* Calcul des dates au plus tot *");
+
 // ------------ Date au plus tot (Etape 5)
-        while (contrainteExiste(graphe)) {
+        while (contrainteExiste2(graphe)) {
             for (int[] ligneSommet : Calendrier) {
-                System.out.printf("Test Sommet %d %d %d\n", ligneSommet[0], ligneSommet[1], ligneSommet[2]);
+                System.out.printf("\n\t\t\t\t\t\tTEST Sommet %d\n", ligneSommet[0]);
                 for (G2_Tache tache : graphe.getGraph_tach()) {
                     int Pred = findRangCalendarInTab(Calendrier, ligneSommet[0]);
                     int Actu = findRangCalendarInTab(Calendrier, tache.getSommet());
-                    System.out.printf("\nLe sommet %d existe dans contrainte " + tache.getContrainte() + " de S%d ??? \n", ligneSommet[0], tache.getSommet());
                     if (tache.getContrainte().contains(ligneSommet[0])) {
+                        System.out.printf("S%d est un prédécesseur de S%d\n", ligneSommet[0], tache.getSommet());
                         int delaisPred = findSommetInGraphe(graphe,ligneSommet[0]).getDelai();
-                        System.out.println("Calendrier[Actu][1] < (Calendrier[Pred][1] + delaisPred) " + Calendrier[Actu][1] + " _ " + (Calendrier[Pred][1] + delaisPred));
                         if (Calendrier[Actu][1] < (Calendrier[Pred][1] + delaisPred)) {
+                            System.out.printf("S%d_Date+tot = %d < S%d_Date+tot %d + délais %d ", Calendrier[Actu][0], Calendrier[Actu][1], Calendrier[Pred][0], Calendrier[Pred][1], delaisPred);
+                            System.out.printf("==> S%d_Date+tot = %d\n", Calendrier[Actu][0], (Calendrier[Pred][1] + delaisPred));
                             Calendrier[Actu][1] = Calendrier[Pred][1] + delaisPred;
                         }
                         if (findSommetInGraphe(graphe,Calendrier[Pred][0]).getContrainte().size() == 0) {
@@ -487,37 +494,104 @@ public class G2_Main {
                 }
             }
         }
+
+/*        System.out.println("AFFICHAGE INTERMEDIAIRE Calendrier :");
+        System.out.printf("%6s %8s %9s\n", "Sommet", "Date+tot", "Date+tard");
+        for (int k = 0; k < Calendrier.length; k++) {
+            System.out.printf("%6d %8d %9d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2]);
+        }*/
 
         graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
 // 5 ------------ Date au plus tard (Etape 5)
-        /*while (contrainteExiste(graphe)) {
-            for (int[] ligneSommet : Calendrier) {
-                System.out.printf("Test Sommet %d %d %d\n", ligneSommet[0], ligneSommet[1], ligneSommet[2]);
-                for (G2_Tache tache : graphe.getGraph_tach()) {
-                    int Pred = findRangCalendarInTab(Calendrier, ligneSommet[0]);
-                    int Actu = findRangCalendarInTab(Calendrier, tache.getSommet());
-                    System.out.printf("\nLe sommet %d existe dans contrainte " + tache.getContrainte() + " de S%d ??? \n", ligneSommet[0], tache.getSommet());
-                    if (tache.getContrainte().contains(ligneSommet[0])) {
-                        int delaisPred = findSommetInGraphe(graphe,ligneSommet[0]).getDelai();
-                        System.out.println("Calendrier[Actu][1] < (Calendrier[Pred][1] + delaisPred) " + Calendrier[Actu][1] + " _ " + (Calendrier[Pred][1] + delaisPred));
-                        if (Calendrier[Actu][1] < (Calendrier[Pred][1] + delaisPred)) {
-                            Calendrier[Actu][1] = Calendrier[Pred][1] + delaisPred;
+
+        System.out.println("\n\n\t* Calcul des dates au plus tard *");
+        System.out.println("\n!!! Pour des raisons de programmation les délais au plus tard sont initialisé à 999 !!!");
+
+        // FIN
+        Calendrier[Calendrier.length-1][2] = Calendrier[Calendrier.length-1][1]; // Date au plus tard = Date au plus tard;
+        int m = 0;
+        for (G2_Tache tache : graphe.getGraph_tach()) {
+            // si la tache à pour contrainte 0 on lui met date debut = 0
+            if (tache.getContrainte().contains(0)) {
+                tache.getContrainte().remove((Integer)0);
+            }
+            if (Calendrier[m][0] != 0) {
+                Calendrier[m][2] = 999;
+            }
+            m++;
+        }
+
+        List<Successeur> successeurs = createSuccesseur(graphe);
+
+        while (successeursExiste(successeurs)) {
+            for (int j = successeurs.size() - 1; j >= 0; j--) {
+                if (!successeurs.get(j).getSuccesseurs().isEmpty()) {
+//                    System.out.println("on est dans le 1er if ----------");
+                    int actu = findRangCalendarInTab(Calendrier, successeurs.get(j).getSommet());
+                    int actuDelais = findSommetInGraphe(graphe, successeurs.get(j).getSommet()).getDelai();
+                    for (int l = 0; l < successeurs.get(j).getSuccesseurs().size(); l++) {
+//                        System.out.println("on est dans le 2eme for l=" + l);
+                        int succ = findRangCalendarInTab(Calendrier, successeurs.get(j).getSuccesseurs().get(l));
+                        int succINsucces = findSuccesseur(successeurs, successeurs.get(j).getSuccesseurs().get(l));
+                        if (Calendrier[actu][2] > (Calendrier[succ][2] - actuDelais)) {
+                            System.out.printf("\nS%d_Date+tard = %d > S%d_Date+tard %d - délais %d ", Calendrier[actu][0], Calendrier[actu][2], Calendrier[succ][0], Calendrier[succ][2], actuDelais);
+                            System.out.printf("==> S%d_Date+tard = %d\n", Calendrier[actu][0], (Calendrier[succ][2] - actuDelais));
+                            Calendrier[actu][2] = (Calendrier[succ][2] - actuDelais);
                         }
-                        if (findSommetInGraphe(graphe,Calendrier[Pred][0]).getContrainte().size() == 0) {
-                            tache.getContrainte().remove((Integer) Calendrier[Pred][0]);
+                        if (successeurs.get(succINsucces).getSuccesseurs().size() == 0) {
+//                            System.out.println("DELETE");
+                            successeurs.get(j).getSuccesseurs().remove((Integer) successeurs.get(j).getSuccesseurs().get(l--));
                         }
                     }
                 }
             }
-        }*/
-
-
-        System.out.println("Calendrier :");
-        for (int k = 0; k < Calendrier.length; k++) {
-            System.out.printf("%6s %8s %9s\n", "Sommet", "Date+tot", "Date+tard");
-            System.out.printf("%6d %8d %9d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2]);
         }
 
+        System.out.println("\n\t\t*** Calendrier ***\n");
+        System.out.printf("%6s %8s %9s %12s\n", "Sommet", "Date+tot", "Date+tard", "Marge totale");
+        for (int k = 0; k < Calendrier.length; k++) {
+            System.out.printf("%6d %8d %9d %12d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2], (Calendrier[k][2] - Calendrier[k][1]));
+        }
+    }
 
+    private static List<Successeur> createSuccesseur(G2_Graphe graphe) {
+        List<Successeur> successeurs = new ArrayList<>();
+
+        for (G2_Tache ta : graphe.getGraph_tach()) {
+            successeurs.add(new Successeur(ta.getSommet()));
+        }
+
+        for (G2_Tache ta : graphe.getGraph_tach()) {
+            for (int contrainte : ta.getContrainte()) {
+                int temp = findSuccesseur(successeurs, contrainte);
+                if (temp != -1) {
+                    successeurs.get(temp).addSuccesseurs(ta.getSommet());
+                }
+            }
+        }
+
+//        for (Successeur su : successeurs) {
+//            System.out.print(su);
+//        }
+        return successeurs;
+    }
+    private static int findSuccesseur(List<Successeur> suc, int sommet) {
+        int index = 0;
+        for (Successeur s : suc) {
+            if (s.getSommet() == sommet) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
+    private static boolean successeursExiste (List<Successeur> successeurs) {
+        for (Successeur s : successeurs) {
+            if (!s.getSuccesseurs().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

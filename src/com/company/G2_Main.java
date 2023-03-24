@@ -13,7 +13,7 @@ public class G2_Main {
             try {
 // ------------ Variable
                 Scanner sc = new Scanner(System.in);
-                String name_file; // nom du fichier à ouvrir
+                String name_file = null; // nom du fichier à ouvrir
                 String list_file = "./fichier_test/liste_en_mem.txt";
                 String mem_file = "./fichier_test/memoire.txt";
                 int i=1;
@@ -92,16 +92,24 @@ public class G2_Main {
 
                 if (!detectionCircuit(graphe) && !arcNeg(graphe)) {
                     System.out.println("Le circuit NE contient PAS d'arc négatif");
-                    graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+                    if (choix != 0) {
+                        graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+                    } else {
+                        graphe = lireGraphe(name_file);
+                    }
 
 // 4 ------------ Calcule du rangs (Etape 4)
                     rangs(graphe);
-                    graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+                    if (choix != 0) {
+                        graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+                    } else {
+                        graphe = lireGraphe(name_file);
+                    }
 
 // 5 ------------ Date au plus tot (Etape 5)
 // 5 ------------ Date au plus tard (Etape 5)
 // 5 ------------ Calendrier /affichage (Etape 5)
-                    calendrier(graphe, choix, mem_file);
+                    calendrier(graphe, choix, mem_file, name_file);
 
 // 6 ------------ Marge (Etape 6)
 
@@ -449,7 +457,7 @@ public class G2_Main {
         return null;
     }
 
-    private static void calendrier(G2_Graphe graphe, int choix, String mem_file) {
+    private static void calendrier(G2_Graphe graphe, int choix, String mem_file, String name_file) {
         int[][] Calendrier = new int[graphe.getGraph_tach().size()+1][3];
         int i = 1;
 
@@ -501,7 +509,11 @@ public class G2_Main {
             System.out.printf("%6d %8d %9d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2]);
         }*/
 
-        graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+        if (choix != 0) {
+            graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+        } else {
+            graphe = lireGraphe(name_file);
+        } // on recup le graphe puisqu'on l'a changer dans la detection de circuit
 // 5 ------------ Date au plus tard (Etape 5)
 
         System.out.println("\n\n\t* Calcul des dates au plus tard *");

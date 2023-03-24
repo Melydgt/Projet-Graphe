@@ -9,10 +9,6 @@ public class G2_Graphe {
     public G2_Graphe() {
     }
 
-    public G2_Graphe(List<G2_Tache> graph_tach) {
-        this.graph_tach = graph_tach;
-    }
-
     public List<G2_Tache> getGraph_tach() {
         return graph_tach;
     }

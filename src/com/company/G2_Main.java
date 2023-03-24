@@ -28,7 +28,8 @@ public class G2_Main {
                 String line;
 
                 while((line = br.readLine()) != null) {
-                    sb.append("\t("+ (i++) + ") " +line);
+                    sb.append("\t(").append(i++).append(") ").append(line);
+//                    sb.append("\t("+ (i++) + ") " +line);
                     sb.append("\n");
                 }
                 fr.close();
@@ -55,18 +56,24 @@ public class G2_Main {
 
 // 1 ------------ Choix d'utilisation (Etape 1...)
                 if (choix == 0) {
-                    System.out.println("Entrer le nom du fichier que vous voulez lire");
-                    name_file = sc.nextLine();
-                    System.out.println("Nous ouvrons le fichier " + name_file + ".txt");
+                    boolean file_existe = false;
+                    while (!file_existe) {
+                        System.out.println("Entrer le nom du fichier que vous voulez lire\ttape 999 pour exit");
+                        name_file = sc.nextLine();
+                        System.out.println("Nous ouvrons le fichier " + name_file + ".txt");
+                        file_existe = new File("./fichier_test/" + name_file + ".txt").exists();
+                        if (file_existe) {
+                            graphe = lireGraphe(name_file);
 
-                    if (new File("./fichier_test/" + name_file + ".txt").exists()) {
-                        graphe = lireGraphe(name_file);
-
-                        // SAVE sauvegarde du graphe à l'aide de GSON
-                        String jsonStrGraphe = new Gson().toJson(graphe);
-                        writeJsonToFile(jsonStrGraphe, name_file);
-                    } else {
-                        System.out.println("!!! Le fichier n'existe pas !!!");
+                            // SAVE sauvegarde du graphe à l'aide de GSON
+                            String jsonStrGraphe = new Gson().toJson(graphe);
+                            writeJsonToFile(jsonStrGraphe, name_file);
+                        } else {
+                            System.out.println("!!! Le fichier n'existe pas !!!");
+                        }
+                        if (name_file.equals("999")) {
+                            System.exit(0);
+                        }
                     }
                 }
 // 1 ------------ Choix d'utilisation (...Etape 1)
@@ -77,6 +84,8 @@ public class G2_Main {
                         System.out.println("!!! Aucun graphe en mémoire !!!");
                     }
                 }
+
+
 
 // 2 ------------ AFFICHAGE (Etape 2)
                 System.out.println("\t\t*** Load Graphe ***");

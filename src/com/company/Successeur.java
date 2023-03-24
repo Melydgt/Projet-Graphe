@@ -7,16 +7,8 @@ public class Successeur {
     private int sommet;
     private List<Integer> successeurs = new ArrayList<>();
 
-    public Successeur() {
-    }
-
     public Successeur(int sommet) {
         this.sommet = sommet;
-    }
-
-    public Successeur(int sommet, List<Integer> successeurs) {
-        this.sommet = sommet;
-        this.successeurs = successeurs;
     }
 
     public int getSommet() {

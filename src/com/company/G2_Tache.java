@@ -25,10 +25,6 @@ public class G2_Tache {
         return contrainte;
     }
 
-    public void setContrainte(List<Integer> contrainte) {
-        this.contrainte = contrainte;
-    }
-
     @Override
     public String toString() {
         return String.format("\n%8s | %8d | %15s", sommet, delai, contrainte);

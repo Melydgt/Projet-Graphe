@@ -16,20 +16,29 @@ public class G2_Main {
                 String name_file = null; // nom du fichier à ouvrir
                 String list_file = "./fichier_test/liste_en_mem.txt";
                 String mem_file = "./fichier_test/memoire.txt";
+
                 int i=1;
                 choix = -1;
                 G2_Graphe graphe = null;
 
 // ------------ Récuperer la liste des graphes en mémoire
                 File fileList = new File(list_file);
+                File fileMem = new File(mem_file);
+                if (!fileList.exists()) {
+                    fileList.createNewFile();
+                }
+                if (!fileMem.exists()) {
+                    fileMem.createNewFile();
+                }
+
                 FileReader fr = new FileReader(fileList);   // Créer l'objet File Reader
                 BufferedReader br = new BufferedReader(fr); // Créer l'objet BufferedReader qui va lire chaque ligne
                 StringBuffer sb = new StringBuffer();
                 String line;
 
                 while((line = br.readLine()) != null) {
-                    sb.append("\t(").append(i++).append(") ").append(line);
-//                    sb.append("\t("+ (i++) + ") " +line);
+//                    sb.append("\t(").append(i++).append(") ").append(line);
+                    sb.append("\t("+ (i++) + ") " +line);
                     sb.append("\n");
                 }
                 fr.close();
@@ -39,9 +48,14 @@ public class G2_Main {
                 System.out.println("\nBonjour et bienvenue dans ce programme pour l'ordonnancement d'un graphe\ttape 999 pour exit");
                 System.out.println("Graphe sauvegarder :");
                 System.out.println(sb);
-                while (0>choix || choix>i) {
+                while (0>choix || choix>i-1) {
+                    choix = -1;
                     try {
-                        System.out.println("Vous pouvez ouvrir un nouveau graphe(0) ou lire un graphe déja sauvegarder(1-" + (i-1) + ")");
+                        if (i-1 == 0) {
+                            System.out.println("Vous pouvez ouvrir un nouveau graphe(0) ou lire un graphe déja sauvegarder(0-" + (i-1) + ")");
+                        } else {
+                            System.out.println("Vous pouvez ouvrir un nouveau graphe(0) ou lire un graphe déja sauvegarder(1-" + (i-1) + ")");
+                        }
                         choix = sc.nextInt();
                         if (choix == 999){
                             System.exit(0);
@@ -86,39 +100,39 @@ public class G2_Main {
                 }
 
 
-
+                if (!(graphe == null)) {
 // 2 ------------ AFFICHAGE (Etape 2)
-                System.out.println("\t\t*** Load Graphe ***");
-                System.out.println(graphe);
-                AffichageGraphe(graphe);
+                    System.out.println("\t\t*** Load Graphe ***");
+                    System.out.println(graphe);
+                    AffichageGraphe(graphe);
 
 // 2 ------------ Matrice des valeurs (Etape 2)
-                AffichageMatrice(graphe);
+                    AffichageMatrice(graphe);
 
 // 3 ------------ Vérifier les propriétés (Etape 3)
-                System.out.printf("\nPoint d'entrée : %d\tPoint de sorties : %d\n\n", 0, graphe.getGraph_tach().size());
-                System.out.println("Présence de circuit dans le graphe ?");
+                    System.out.printf("\nPoint d'entrée : %d\tPoint de sorties : %d\n\n", 0, graphe.getGraph_tach().size());
+                    System.out.println("Présence de circuit dans le graphe ?");
 
-                if (!detectionCircuit(graphe) && !arcNeg(graphe)) {
-                    System.out.println("Le circuit NE contient PAS d'arc négatif");
-                    if (choix != 0) {
-                        graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
-                    } else {
-                        graphe = lireGraphe(name_file);
-                    }
+                    if (!detectionCircuit(graphe) && !arcNeg(graphe)) {
+                        System.out.println("Le circuit NE contient PAS d'arc négatif");
+                        if (choix != 0) {
+                            graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+                        } else {
+                            graphe = lireGraphe(name_file);
+                        }
 
 // 4 ------------ Calcule du rangs (Etape 4)
-                    rangs(graphe);
-                    if (choix != 0) {
-                        graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
-                    } else {
-                        graphe = lireGraphe(name_file);
-                    }
+                        rangs(graphe);
+                        if (choix != 0) {
+                            graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+                        } else {
+                            graphe = lireGraphe(name_file);
+                        }
 
 // 5 ------------ Date au plus tot (Etape 5)
 // 5 ------------ Date au plus tard (Etape 5)
 // 5 ------------ Calendrier /affichage (Etape 5)
-                    calendrier(graphe, choix, mem_file, name_file);
+                        calendrier(graphe, choix, mem_file, name_file);
 
 // 6 ------------ Marge (Etape 6)
 
@@ -126,12 +140,13 @@ public class G2_Main {
 // 6 ------------ Chemin critique (Etape 6)
 
 
-                } else {
-                    System.out.println(graphe);
-                    if (arcNeg(graphe)) {
-                        System.out.println("Le circuit contient un ou plusieurs arc(s) négatif");
+                    } else {
+                        System.out.println(graphe);
+                        if (arcNeg(graphe)) {
+                            System.out.println("Le circuit contient un ou plusieurs arc(s) négatif");
+                        }
+                        // escape return au debut
                     }
-                    // escape return au debut
                 }
             }
             catch(IOException e)

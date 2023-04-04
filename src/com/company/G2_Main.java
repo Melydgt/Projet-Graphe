@@ -482,7 +482,7 @@ public class G2_Main {
     }
 
     private static void calendrier(G2_Graphe graphe, int choix, String mem_file, String name_file) {
-        int[][] Calendrier = new int[graphe.getGraph_tach().size()+1][3];
+        int[][] Calendrier = new int[graphe.getGraph_tach().size()+1][5];
         int i = 1;
 
         // Début
@@ -527,17 +527,11 @@ public class G2_Main {
             }
         }
 
-/*        System.out.println("AFFICHAGE INTERMEDIAIRE Calendrier :");
-        System.out.printf("%6s %8s %9s\n", "Sommet", "Date+tot", "Date+tard");
-        for (int k = 0; k < Calendrier.length; k++) {
-            System.out.printf("%6d %8d %9d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2]);
-        }*/
-
         if (choix != 0) {
             graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
         } else {
             graphe = lireGraphe(name_file);
-        } // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+        } // on recup le graphe puisqu'on l'a modifier dans le while précèdent
 // 5 ------------ Date au plus tard (Etape 5)
 
         System.out.println("\n\n\t* Calcul des dates au plus tard *");
@@ -583,10 +577,24 @@ public class G2_Main {
             }
         }
 
+        if (choix != 0) {
+            graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
+        } else {
+            graphe = lireGraphe(name_file);
+        } // on recup le graphe puisqu'on l'a modifier dans le while précèdent
+        System.out.println(graphe);
+
         System.out.println("\n\t\t*** Calendrier ***\n");
-        System.out.printf("%6s %8s %9s %12s\n", "Sommet", "Date+tot", "Date+tard", "Marge totale");
+        System.out.printf("%6s %8s %9s %12s %11s\n", "Sommet", "Date+tot", "Date+tard", "Marge totale", "Marge libre");
         for (int k = 0; k < Calendrier.length; k++) {
-            System.out.printf("%6d %8d %9d %12d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2], (Calendrier[k][2] - Calendrier[k][1]));
+            if (Calendrier[k][0] == 0) {
+                Calendrier[k][3] = 0;   // Marge totale DEBUT
+                Calendrier[k][4] = 0;   // Marge libre DEBUT
+            } else {
+                Calendrier[k][3] = (Calendrier[k][2] - Calendrier[k][1]);                                       // Marge totale
+                Calendrier[k][4] = Calendrier[k][3] - findSommetInGraphe(graphe,Calendrier[k][0]).getDelai();   // Marge libre
+            }
+            System.out.printf("%6d %8d %9d %12d %11d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2], Calendrier[k][3], Calendrier[k][4]);
         }
     }
 
@@ -629,5 +637,9 @@ public class G2_Main {
             }
         }
         return false;
+    }
+
+    private static void cheminCritique () {
+        System.out.println("coming soon");
     }
 }

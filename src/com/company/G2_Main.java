@@ -99,7 +99,6 @@ public class G2_Main {
                     }
                 }
 
-
                 if (!(graphe == null)) {
 // 2 ------------ AFFICHAGE (Etape 2)
                     System.out.println("\t\t*** Load Graphe ***");
@@ -132,13 +131,12 @@ public class G2_Main {
 // 5 ------------ Date au plus tot (Etape 5)
 // 5 ------------ Date au plus tard (Etape 5)
 // 5 ------------ Calendrier /affichage (Etape 5)
-                        calendrier(graphe, choix, mem_file, name_file);
-
 // 6 ------------ Marge (Etape 6)
+                        // calendrier(graphe, choix, mem_file, name_file);
 
 
 // 6 ------------ Chemin critique (Etape 6)
-
+                        cheminCritique(graphe, choix, mem_file, name_file);
 
                     } else {
                         System.out.println(graphe);
@@ -454,7 +452,7 @@ public class G2_Main {
             }
         }
 
-        System.out.println("Liste des rangs des sommets");
+        System.out.println("\n* Liste des rangs des sommets *");
         System.out.printf("%-5s %-4s\n", "Sommet", "Rang");
         for (int k = 0; k < TabRang.length; k++) {
             System.out.printf("S%-5d %-4d\n", TabRang[k][0], TabRang[k][1]);
@@ -471,7 +469,6 @@ public class G2_Main {
         }
         return -1;
     }
-
     private static G2_Tache findSommetInGraphe (G2_Graphe graphe, int sommet) {
         for (int index=0; index<graphe.getGraph_tach().size(); index++) {
             if (sommet == graphe.getGraph_tach().get(index).getSommet()) {
@@ -481,7 +478,7 @@ public class G2_Main {
         return null;
     }
 
-    private static void calendrier(G2_Graphe graphe, int choix, String mem_file, String name_file) {
+    private static int[][] calendrier(G2_Graphe graphe, int choix, String mem_file, String name_file) {
         int[][] Calendrier = new int[graphe.getGraph_tach().size()+1][5];
         int i = 1;
 
@@ -577,14 +574,7 @@ public class G2_Main {
             }
         }
 
-        if (choix != 0) {
-            graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
-        } else {
-            graphe = lireGraphe(name_file);
-        } // on recup le graphe puisqu'on l'a modifier dans le while précèdent
-        System.out.println(graphe);
-
-        System.out.println("\n\t\t*** Calendrier ***\n");
+        System.out.println("\n\t\t*** Calendrier final ***\n");
         System.out.printf("%6s %8s %9s %12s %11s\n", "Sommet", "Date+tot", "Date+tard", "Marge totale", "Marge libre");
         for (int k = 0; k < Calendrier.length; k++) {
             if (Calendrier[k][0] == 0) {
@@ -596,11 +586,13 @@ public class G2_Main {
             }
             System.out.printf("%6d %8d %9d %12d %11d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2], Calendrier[k][3], Calendrier[k][4]);
         }
+        return Calendrier;
     }
 
     private static List<Successeur> createSuccesseur(G2_Graphe graphe) {
         List<Successeur> successeurs = new ArrayList<>();
 
+        successeurs.add(new Successeur(0));
         for (G2_Tache ta : graphe.getGraph_tach()) {
             successeurs.add(new Successeur(ta.getSommet()));
         }
@@ -629,7 +621,6 @@ public class G2_Main {
         }
         return -1;
     }
-
     private static boolean successeursExiste (List<Successeur> successeurs) {
         for (Successeur s : successeurs) {
             if (!s.getSuccesseurs().isEmpty()) {
@@ -639,7 +630,34 @@ public class G2_Main {
         return false;
     }
 
-    private static void cheminCritique () {
-        System.out.println("coming soon");
+    private static void cheminCritique (G2_Graphe graphe, int choix, String mem_file, String name_file) {
+        List<Successeur> successeurs = createSuccesseur(graphe);
+        List<Integer> chemin = new ArrayList<>();
+        int[][] Calendrier = calendrier(graphe, choix, mem_file, name_file);
+        boolean TestAjout;
+        int last_sommet;
+        System.out.println("\n\t\t*** Chemin critique ***\n");
+
+        chemin.add(0);
+        // While : tant que le dernier point n'est pas Fin, ici la taille de notre graphe
+        while (chemin.get(chemin.size()-1) != graphe.getGraph_tach().size()) {
+            TestAjout = false;
+            // foreach : s parcourt les successeurs du dernier point du chemin critique.
+            for (int s : (successeurs.get(findSuccesseur(successeurs, chemin.get(chemin.size()-1))).getSuccesseurs())) {
+                // if : si le successeur à sa marge totale = 0 on le choisit
+                if (Calendrier[findRangCalendarInTab(Calendrier, s)][3] == 0) {
+                    System.out.printf("La marge totale de %d = 0 on ajoute le point %d au chemin critique\n", s, s);
+                    chemin.add(s);
+                    TestAjout = true;
+                }
+            }
+            if (!TestAjout) {
+                System.out.println("on ne peux ajouter aucun point il faut reculer");
+                last_sommet = chemin.get(chemin.size()-1);
+                chemin.remove(chemin.size()-1);
+                successeurs.get(findSuccesseur(successeurs, chemin.get(chemin.size()-1))).getSuccesseurs().remove((Integer) last_sommet);
+            }
+        }
+        System.out.println("\n\n* Un chemin critique possible *\n\t" + chemin);
     }
 }

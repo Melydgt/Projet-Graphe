@@ -21,7 +21,9 @@ Si la réponse à la question 3 est « Oui », procéder au calcul des calendrie
 
 ~~4. Calculer les rangs de tous les sommets du graphe.~~
 
-5. Calculer le calendrier au plus tôt, le calendrier au plus tard et les marges.
+~~5. Calculer le calendrier au plus tôt, le calendrier au plus tard et les marges.~~
+
 Pour le calcul du calendrier au plus tard, considérez que la date au plus tard de fin de projet 
 est égale à sa date au plus tôt.
-6. Calculer le(s) chemin(s) critique(s) et les afficher
+
+~~6. Calculer le(s) chemin(s) critique(s) et les afficher~~ ON CALCULE 1 SEUL CHEMIN CRITIQUE

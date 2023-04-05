@@ -548,7 +548,7 @@ public class G2_Main {
             m++;
         }
 
-        List<Successeur> successeurs = createSuccesseur(graphe);
+        List<G2_Successeur> successeurs = createSuccesseur(graphe);
 
         while (successeursExiste(successeurs)) {
             for (int j = successeurs.size() - 1; j >= 0; j--) {
@@ -589,12 +589,12 @@ public class G2_Main {
         return Calendrier;
     }
 
-    private static List<Successeur> createSuccesseur(G2_Graphe graphe) {
-        List<Successeur> successeurs = new ArrayList<>();
+    private static List<G2_Successeur> createSuccesseur(G2_Graphe graphe) {
+        List<G2_Successeur> successeurs = new ArrayList<>();
 
-        successeurs.add(new Successeur(0));
+        successeurs.add(new G2_Successeur(0));
         for (G2_Tache ta : graphe.getGraph_tach()) {
-            successeurs.add(new Successeur(ta.getSommet()));
+            successeurs.add(new G2_Successeur(ta.getSommet()));
         }
 
         for (G2_Tache ta : graphe.getGraph_tach()) {
@@ -611,9 +611,9 @@ public class G2_Main {
 //        }
         return successeurs;
     }
-    private static int findSuccesseur(List<Successeur> suc, int sommet) {
+    private static int findSuccesseur(List<G2_Successeur> suc, int sommet) {
         int index = 0;
-        for (Successeur s : suc) {
+        for (G2_Successeur s : suc) {
             if (s.getSommet() == sommet) {
                 return index;
             }
@@ -621,8 +621,8 @@ public class G2_Main {
         }
         return -1;
     }
-    private static boolean successeursExiste (List<Successeur> successeurs) {
-        for (Successeur s : successeurs) {
+    private static boolean successeursExiste (List<G2_Successeur> successeurs) {
+        for (G2_Successeur s : successeurs) {
             if (!s.getSuccesseurs().isEmpty()) {
                 return true;
             }
@@ -631,7 +631,7 @@ public class G2_Main {
     }
 
     private static void cheminCritique (G2_Graphe graphe, int choix, String mem_file, String name_file) {
-        List<Successeur> successeurs = createSuccesseur(graphe);
+        List<G2_Successeur> successeurs = createSuccesseur(graphe);
         List<Integer> chemin = new ArrayList<>();
         int[][] Calendrier = calendrier(graphe, choix, mem_file, name_file);
         boolean TestAjout;

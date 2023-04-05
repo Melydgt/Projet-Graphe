@@ -3,11 +3,11 @@ package com.company;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Successeur {
+public class G2_Successeur {
     private int sommet;
     private List<Integer> successeurs = new ArrayList<>();
 
-    public Successeur(int sommet) {
+    public G2_Successeur(int sommet) {
         this.sommet = sommet;
     }
 

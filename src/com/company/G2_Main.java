@@ -544,12 +544,44 @@ public class G2_Main {
             }
             if (Calendrier[m][0] != 0) {
                 Calendrier[m][2] = 999;
+                Calendrier[m][4] = 999;
             }
             m++;
         }
 
         List<G2_Successeur> successeurs = createSuccesseur(graphe);
 
+        while (successeursExiste(successeurs)) {
+            for (int j = successeurs.size() - 1; j >= 0; j--) {
+                if (!successeurs.get(j).getSuccesseurs().isEmpty()) {
+//                    System.out.println("on est dans le 1er if ----------");
+                    int actu = findRangCalendarInTab(Calendrier, successeurs.get(j).getSommet());
+                    int actuDelais = findSommetInGraphe(graphe, successeurs.get(j).getSommet()).getDelai();
+                    for (int l = 0; l < successeurs.get(j).getSuccesseurs().size(); l++) {
+//                        System.out.println("on est dans le 2eme for l=" + l);
+                        int succ = findRangCalendarInTab(Calendrier, successeurs.get(j).getSuccesseurs().get(l));
+                        int succINsucces = findSuccesseur(successeurs, successeurs.get(j).getSuccesseurs().get(l));
+                        if (Calendrier[actu][2] > (Calendrier[succ][2] - actuDelais)) {
+                            System.out.printf("\nS%d_Date+tard = %d > S%d_Date+tard %d - délais %d ", Calendrier[actu][0], Calendrier[actu][2], Calendrier[succ][0], Calendrier[succ][2], actuDelais);
+                            System.out.printf("==> S%d_Date+tard = %d\n", Calendrier[actu][0], (Calendrier[succ][2] - actuDelais));
+                            Calendrier[actu][2] = (Calendrier[succ][2] - actuDelais);
+                        }
+                        if (Calendrier[actu][4] > (Calendrier[succ][1]-Calendrier[actu][1]-actuDelais)) {
+                            System.out.printf("\nS%d_Marge.L = %d > S%d_Date+tot.s %d - S%d_Date+tot.a %d - délais.a %d ", Calendrier[actu][0], Calendrier[actu][4], Calendrier[succ][0], Calendrier[succ][1], Calendrier[actu][0], Calendrier[actu][1], actuDelais);
+                            System.out.printf("==> S%d_Marge.L = %d\n", Calendrier[actu][0], ((Calendrier[succ][1]-Calendrier[actu][1]-actuDelais)));
+                            Calendrier[actu][4] = (Calendrier[succ][1]-Calendrier[actu][1]-actuDelais);
+                        }
+                        if (successeurs.get(succINsucces).getSuccesseurs().size() == 0) {
+//                            System.out.println("DELETE");
+                            successeurs.get(j).getSuccesseurs().remove((Integer) successeurs.get(j).getSuccesseurs().get(l--));
+                        }
+                    }
+                }
+            }
+        }
+
+// 5 ------------ Marge libre = min(date+tot du successeur - date+tôt de l'actuel - délai actuel) (Etape 5)
+/*        successeurs = createSuccesseur(graphe);
         while (successeursExiste(successeurs)) {
             for (int j = successeurs.size() - 1; j >= 0; j--) {
                 if (!successeurs.get(j).getSuccesseurs().isEmpty()) {
@@ -572,7 +604,8 @@ public class G2_Main {
                     }
                 }
             }
-        }
+        }*/
+
 
         System.out.println("\n\t\t*** Calendrier final ***\n");
         System.out.printf("%6s %8s %9s %12s %11s\n", "Sommet", "Date+tot", "Date+tard", "Marge totale", "Marge libre");
@@ -581,8 +614,8 @@ public class G2_Main {
                 Calendrier[k][3] = 0;   // Marge totale DEBUT
                 Calendrier[k][4] = 0;   // Marge libre DEBUT
             } else {
-                Calendrier[k][3] = (Calendrier[k][2] - Calendrier[k][1]);                                       // Marge totale
-                Calendrier[k][4] = Calendrier[k][3] - findSommetInGraphe(graphe,Calendrier[k][0]).getDelai();   // Marge libre
+                Calendrier[k][3] = (Calendrier[k][2] - Calendrier[k][1]); // Marge totale
+//                Calendrier[k][4] = Calendrier[k][3] - findSommetInGraphe(graphe,Calendrier[k][0]).getDelai();   // Marge libre
             }
             System.out.printf("%6d %8d %9d %12d %11d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2], Calendrier[k][3], Calendrier[k][4]);
         }

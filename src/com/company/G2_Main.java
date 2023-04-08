@@ -16,6 +16,7 @@ public class G2_Main {
                 String name_file = null; // nom du fichier à ouvrir
                 String list_file = "./fichier_test/liste_en_mem.txt";
                 String mem_file = "./fichier_test/memoire.txt";
+                String fileExe = ""; // fichier dans lequel on sauvegarde les traces d'exécution du programme
 
                 int i=1;
                 choix = -1;
@@ -68,6 +69,7 @@ public class G2_Main {
 
                 sc.nextLine(); // on libère la prochaine ligne
 
+
 // 1 ------------ Choix d'utilisation (Etape 1...)
                 if (choix == 0) {
                     boolean file_existe = false;
@@ -89,20 +91,33 @@ public class G2_Main {
                             System.exit(0);
                         }
                     }
+                    fileExe = name_file; // VAR Enregistrement des traces d'exécution
                 }
+
 // 1 ------------ Choix d'utilisation (...Etape 1)
                 else {
                     if (!fileEmpty(list_file)) {
                         graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class);
+                        fileExe = readONElineFromFile(choix,list_file);
                     } else {
                         System.out.println("!!! Aucun graphe en mémoire !!!");
                     }
                 }
 
+
                 if (!(graphe == null)) {
+// 0 ------------ Enregistrement des traces d'exécution
+                    fileExe = "Execution_" + fileExe + ".txt";
+                    File fileExecution = new File(fileExe);
+                    if (!fileExecution.exists()) {
+                        fileExecution.createNewFile();
+                    }
+
 // 2 ------------ AFFICHAGE (Etape 2)
                     System.out.println("\t\t*** Load Graphe ***");
+                    writeExecutionToFile(fileExe, "\t\t*** Load Graphe ***");
                     System.out.println(graphe);
+                    writeExecutionToFile(fileExe, graphe.toString());
                     AffichageGraphe(graphe);
 
 // 2 ------------ Matrice des valeurs (Etape 2)
@@ -133,7 +148,6 @@ public class G2_Main {
 // 5 ------------ Calendrier /affichage (Etape 5)
 // 6 ------------ Marge (Etape 6)
                         // calendrier(graphe, choix, mem_file, name_file);
-
 
 // 6 ------------ Chemin critique (Etape 6)
                         cheminCritique(graphe, choix, mem_file, name_file);
@@ -238,6 +252,27 @@ public class G2_Main {
             jsonFile.close();
             jsonList.close();
             System.out.println("Saving successful");
+        } catch (IOException ioe) {
+            System.out.println("ERROR: " + ioe.getMessage());
+        }
+    }
+
+    private static void writeExecutionToFile(String file, String trace) {
+        try {
+            String Temp = "";
+
+            if (!fileEmpty(file)) { Temp = readJsonFromFile(file); }
+
+            PrintWriter writerExe = new PrintWriter(file);
+
+            if (!Temp.equals("")) {
+                writerExe.print(Temp + trace);
+            }
+            else {
+                writerExe.print(trace);
+            }
+
+            writerExe.close();
         } catch (IOException ioe) {
             System.out.println("ERROR: " + ioe.getMessage());
         }
@@ -615,7 +650,6 @@ public class G2_Main {
                 Calendrier[k][4] = 0;   // Marge libre DEBUT
             } else {
                 Calendrier[k][3] = (Calendrier[k][2] - Calendrier[k][1]); // Marge totale
-//                Calendrier[k][4] = Calendrier[k][3] - findSommetInGraphe(graphe,Calendrier[k][0]).getDelai();   // Marge libre
             }
             System.out.printf("%6d %8d %9d %12d %11d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2], Calendrier[k][3], Calendrier[k][4]);
         }

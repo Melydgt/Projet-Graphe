@@ -1,4 +1,7 @@
-# Projet-Graphe
+# Groupe 2 G : Projet-Graphe
+
+## Pour lancer le programme, aller dans src/com/company/ et lancer le fichier G2_Main
+###
 
 ### Déroulement du programme
 

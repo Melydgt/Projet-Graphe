@@ -107,28 +107,34 @@ public class G2_Main {
 
                 if (!(graphe == null)) {
 // 0 ------------ Enregistrement des traces d'exécution
-                    fileExe = "Execution_" + fileExe + ".txt";
+                    fileExe = "./Trace_d_execution/Execution_" + fileExe + ".txt";
                     File fileExecution = new File(fileExe);
                     if (!fileExecution.exists()) {
+                        fileExecution.createNewFile();
+                    } else {
+                        fileExecution.delete();
                         fileExecution.createNewFile();
                     }
 
 // 2 ------------ AFFICHAGE (Etape 2)
                     System.out.println("\t\t*** Load Graphe ***");
-                    writeExecutionToFile(fileExe, "\t\t*** Load Graphe ***");
                     System.out.println(graphe);
+                    writeExecutionToFile(fileExe, "\t\t*** Load Graphe ***\n");
                     writeExecutionToFile(fileExe, graphe.toString());
-                    AffichageGraphe(graphe);
+                    AffichageGraphe(graphe, fileExe);
 
 // 2 ------------ Matrice des valeurs (Etape 2)
-                    AffichageMatrice(graphe);
+                    AffichageMatrice(graphe, fileExe);
 
 // 3 ------------ Vérifier les propriétés (Etape 3)
                     System.out.printf("\nPoint d'entrée : %d\tPoint de sorties : %d\n\n", 0, graphe.getGraph_tach().size());
                     System.out.println("Présence de circuit dans le graphe ?");
+                    writeExecutionToFile(fileExe, String.format("\nPoint d'entrée : %d\tPoint de sorties : %d\n\n", 0, graphe.getGraph_tach().size()));
+                    writeExecutionToFile(fileExe, String.format("Présence de circuit dans le graphe ? "));
 
-                    if (!detectionCircuit(graphe) && !arcNeg(graphe)) {
+                    if (!detectionCircuit(graphe, fileExe) && !arcNeg(graphe)) {
                         System.out.println("Le circuit NE contient PAS d'arc négatif");
+                        writeExecutionToFile(fileExe,"Le circuit NE contient PAS d'arc négatif");
                         if (choix != 0) {
                             graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
                         } else {
@@ -136,7 +142,7 @@ public class G2_Main {
                         }
 
 // 4 ------------ Calcule du rangs (Etape 4)
-                        rangs(graphe);
+                        rangs(graphe, fileExe);
                         if (choix != 0) {
                             graphe = new Gson().fromJson(readONElineFromFile(choix, mem_file), G2_Graphe.class); // on recup le graphe puisqu'on l'a changer dans la detection de circuit
                         } else {
@@ -150,12 +156,13 @@ public class G2_Main {
                         // calendrier(graphe, choix, mem_file, name_file);
 
 // 6 ------------ Chemin critique (Etape 6)
-                        cheminCritique(graphe, choix, mem_file, name_file);
+                        cheminCritique(graphe, choix, mem_file, name_file, fileExe);
 
                     } else {
                         System.out.println(graphe);
                         if (arcNeg(graphe)) {
                             System.out.println("Le circuit contient un ou plusieurs arc(s) négatif");
+                            writeExecutionToFile(fileExe,"Le circuit contient un ou plusieurs arc(s) négatif");
                         }
                         // escape return au debut
                     }
@@ -259,20 +266,10 @@ public class G2_Main {
 
     private static void writeExecutionToFile(String file, String trace) {
         try {
-            String Temp = "";
-
-            if (!fileEmpty(file)) { Temp = readJsonFromFile(file); }
-
-            PrintWriter writerExe = new PrintWriter(file);
-
-            if (!Temp.equals("")) {
-                writerExe.print(Temp + trace);
-            }
-            else {
-                writerExe.print(trace);
-            }
-
+            FileWriter writerExe = new FileWriter(file, true);
+            writerExe.write(trace);
             writerExe.close();
+
         } catch (IOException ioe) {
             System.out.println("ERROR: " + ioe.getMessage());
         }
@@ -315,58 +312,71 @@ public class G2_Main {
     }
 
 
-    private static void AffichageGraphe(G2_Graphe graphe) {
+    private static void AffichageGraphe(G2_Graphe graphe, String fileExe) {
         System.out.printf("\n\t\t*** Affichage chemin du graphe ***\n%11s = %-3s\n", "Chemins  ", "Délais");
+        writeExecutionToFile(fileExe, String.format("\n\n\t\t*** Affichage chemin du graphe ***\n%11s = %-3s\n", "Chemins  ", "Délais"));
         int countArc=0;
         for (G2_Tache sommet : graphe.getGraph_tach()) {
             for (int i = 0; i < sommet.getContrainte().size(); i++) {
                 System.out.printf("%3d --> %-3d = %-3d\n", sommet.getContrainte().get(i), sommet.getSommet(), sommet.getDelai());
+                writeExecutionToFile(fileExe,String.format("%3d --> %-3d = %-3d\n", sommet.getContrainte().get(i), sommet.getSommet(), sommet.getDelai()));
                 countArc++;
             }
         }
         System.out.printf("Il y a %d sommets et %d arcs\n", graphe.getGraph_tach().size(), countArc);
+        writeExecutionToFile(fileExe,String.format("Il y a %d sommets et %d arcs\n", graphe.getGraph_tach().size(), countArc));
     }
 
-    private static void AffichageMatrice(G2_Graphe graphe) {
+    private static void AffichageMatrice(G2_Graphe graphe, String fileExe) {
         System.out.println("\n\t\t*** Matrice des valeur ***\n");
+        writeExecutionToFile(fileExe,("\n\t\t*** Matrice des valeur ***\n"));
 
         // Entête de la matrice
         System.out.printf("%4s%4d", "", 0);
+        writeExecutionToFile(fileExe,String.format("%4s%4d", "", 0));
         for (G2_Tache ta_li : graphe.getGraph_tach()) {
             System.out.printf("%4d", ta_li.getSommet());
+            writeExecutionToFile(fileExe,String.format("%4d", ta_li.getSommet()));
         }
         System.out.println();
+        writeExecutionToFile(fileExe,"\n");
 
         // Sommet 0
         System.out.printf("%4d%4s", 0, '*');
+        writeExecutionToFile(fileExe,String.format("%4d%4s", 0, '*'));
         for (G2_Tache ta_co : graphe.getGraph_tach()) {
             if (ta_co.getContrainte().contains(0)) {
                 System.out.printf("%4d", 0);
+                writeExecutionToFile(fileExe,String.format("%4d", 0));
             } else {
                 System.out.printf("%4s", '*');
+                writeExecutionToFile(fileExe,String.format("%4s", '*'));
             }
         }
         System.out.println();
+        writeExecutionToFile(fileExe,"\n");
 
         // Tous les autres sommets
         for (G2_Tache ta_li : graphe.getGraph_tach()) {
             System.out.printf("%4d%4s", ta_li.getSommet(), '*');
+            writeExecutionToFile(fileExe,String.format("%4d%4s", ta_li.getSommet(), '*'));
             for (G2_Tache ta_co : graphe.getGraph_tach()) {
                 if (ta_co.getContrainte().contains(ta_li.getSommet())) {
                     System.out.printf("%4d", ta_li.getSommet());
+                    writeExecutionToFile(fileExe,String.format("%4d", ta_li.getSommet()));
                 }
                 else {
                     System.out.printf("%4s", '*');
+                    writeExecutionToFile(fileExe,String.format("%4s", '*'));
                 }
             }
             System.out.println();
+            writeExecutionToFile(fileExe,"\n");
         }
     }
 
 
-    private static boolean detectionCircuit(G2_Graphe graphe) {
-//        System.out.println("Find 0 in contrainte");
-//        G2_Graphe graphTemp = new G2_Graphe(graphe.getGraph_tach());
+    private static boolean detectionCircuit(G2_Graphe graphe, String fileExe) {
         for (G2_Tache ta_co : graphe.getGraph_tach()) {
             if (ta_co.getContrainte().contains(0)) {
                 ta_co.getContrainte().remove((Integer)0);
@@ -374,34 +384,39 @@ public class G2_Main {
         }
 
         System.out.println("\n\t\t*** Detection de circuit ***\n\t* Méthode d'élimination des points d'entrée *\n");
+        writeExecutionToFile(fileExe,"\n\t\t*** Detection de circuit ***\n\t* Méthode d'élimination des points d'entrée *\n");
         while (graphe.getGraph_tach().size() != 0 && contrainteExiste(graphe)) {
             for (int i=0; i<graphe.getGraph_tach().size(); i++) {
                 System.out.println("\t\t\t\t\t\tTEST Sommet = " + graphe.getGraph_tach().get(i).getSommet());
+                writeExecutionToFile(fileExe,"\n\t\t\t\t\tTEST Sommet = " + graphe.getGraph_tach().get(i).getSommet());
                 if (graphe.getGraph_tach().get(i).getContrainte().isEmpty()) {
                     System.out.println("Point d'entrée : " + graphe.getGraph_tach().get(i).getSommet());
+                    writeExecutionToFile(fileExe,"\nPoint d'entrée : " + graphe.getGraph_tach().get(i).getSommet());
                     for (G2_Tache ta_co : graphe.getGraph_tach()) {
                             if (ta_co.getContrainte().contains(graphe.getGraph_tach().get(i).getSommet())) {
-//                                System.out.println("REMOVE - " + graphe.getGraph_tach().get(i).getSommet() + " FROM " + ta_co.getSommet());
                                 ta_co.getContrainte().remove((Integer)graphe.getGraph_tach().get(i).getSommet());
                             }
     //                    }
                     }
                     System.out.print("Suppression des points d'entrée. ");
+                    writeExecutionToFile(fileExe,"\nSuppression des points d'entrée. ");
                     graphe.getGraph_tach().remove(i);
                     i--;
                     if (graphe.getGraph_tach().size() != 0) {
                         System.out.println("Il reste des sommets ...");
+                        writeExecutionToFile(fileExe,"Il reste des sommets ...\n");
                     }
                 }
             }
         }
-//        if (graphe.getGraph_tach().size() != 0) {
         if (!contrainteExiste(graphe) && graphe.getGraph_tach().size() != 0) {
             System.out.println("Le graphe contient un circuit (boucle)");
+            writeExecutionToFile(fileExe,"\nLe graphe contient un circuit (boucle). ");
             return true;
         }
         else {
             System.out.println("Le graphe NE contient PAS de circuit");
+            writeExecutionToFile(fileExe,"\nLe graphe NE contient PAS de circuit. ");
             return false;
         }
     }
@@ -438,7 +453,7 @@ public class G2_Main {
     }
 
     // Revoir ... dans le désordre
-    private static void rangs(G2_Graphe graphe) {
+    private static void rangs(G2_Graphe graphe, String fileExe) {
         // on ne compte pas le sommet final
         int Sfinal = graphe.getGraph_tach().size();
         int[][] TabRang = new int[Sfinal-1][2];
@@ -454,14 +469,15 @@ public class G2_Main {
         }
 
         System.out.println("\n\t\t*** Calcul de rang ***\n");
+        writeExecutionToFile(fileExe,"\n\n\t\t*** Calcul de rang ***\n");
         int line_max = i;
         while (contrainteExiste2(graphe)) {
             for (int j = 0; j < line_max; j++) { // Parcourt des sommets qui ont déja des rangs
                 for (G2_Tache ta_co : graphe.getGraph_tach()) {
-
                     if (ta_co.getContrainte().contains(TabRang[j][0])) {
                         if (findSommetInGraphe(graphe,TabRang[j][0]).getContrainte().size() == 0) {
                             System.out.printf("Le sommet %d est un prédécesseur de S%d et il n'a plus d'autre antécédents on supprime le sommet % des contraintes\n", TabRang[j][0], ta_co.getSommet(), TabRang[j][0]);
+                            writeExecutionToFile(fileExe,String.format("Le sommet %d est un prédécesseur de S%d et il n'a plus d'autre antécédents on supprime le sommet % des contraintes\n", TabRang[j][0], ta_co.getSommet(), TabRang[j][0]));
                             ta_co.getContrainte().remove((Integer) TabRang[j][0]);
                         }
                         // vérifier si le rang existe sinon ajouter +1 a la ligne max
@@ -469,6 +485,7 @@ public class G2_Main {
                         if (temp == -1) {
                             if (ta_co.getSommet() != Sfinal) {
                                 System.out.printf("S%d prends le rang : %d\n", ta_co.getSommet(), (TabRang[j][1] + 1));
+                                writeExecutionToFile(fileExe,String.format("S%d prends le rang : %d\n", ta_co.getSommet(), (TabRang[j][1] + 1)));
                                 TabRang[i][0] = ta_co.getSommet();
                                 TabRang[i++][1] = (TabRang[j][1] + 1);
                             }
@@ -477,6 +494,7 @@ public class G2_Main {
                         else {
                             if (TabRang[temp][1] <= TabRang[j][1]+1) {
                                 System.out.printf("S%d prends le nouveaux rang : %d\n", TabRang[temp][0], (TabRang[j][1] + 1));
+                                writeExecutionToFile(fileExe,String.format("S%d prends le nouveaux rang : %d\n", TabRang[temp][0], (TabRang[j][1] + 1)));
                                 TabRang[temp][1] = (TabRang[j][1] + 1);
                             }
                         }
@@ -489,8 +507,11 @@ public class G2_Main {
 
         System.out.println("\n* Liste des rangs des sommets *");
         System.out.printf("%-5s %-4s\n", "Sommet", "Rang");
+        writeExecutionToFile(fileExe,"\n* Liste des rangs des sommets *");
+        writeExecutionToFile(fileExe,String.format("\n%-5s %-4s\n", "Sommet", "Rang"));
         for (int k = 0; k < TabRang.length; k++) {
             System.out.printf("S%-5d %-4d\n", TabRang[k][0], TabRang[k][1]);
+            writeExecutionToFile(fileExe,String.format("S%-5d %-4d\n", TabRang[k][0], TabRang[k][1]));
         }
     }
 
@@ -513,7 +534,7 @@ public class G2_Main {
         return null;
     }
 
-    private static int[][] calendrier(G2_Graphe graphe, int choix, String mem_file, String name_file) {
+    private static int[][] calendrier(G2_Graphe graphe, int choix, String mem_file, String name_file, String fileExe) {
         int[][] Calendrier = new int[graphe.getGraph_tach().size()+1][5];
         int i = 1;
 
@@ -535,20 +556,26 @@ public class G2_Main {
 
         System.out.println("\n\t\t*** Calendrier ***\n");
         System.out.println("\t* Calcul des dates au plus tot *");
+        writeExecutionToFile(fileExe,"\n\t\t*** Calendrier ***\n");
+        writeExecutionToFile(fileExe,"\t* Calcul des dates au plus tot *");
 
 // ------------ Date au plus tot (Etape 5)
         while (contrainteExiste2(graphe)) {
             for (int[] ligneSommet : Calendrier) {
                 System.out.printf("\n\t\t\t\t\t\tTEST Sommet %d\n", ligneSommet[0]);
+                writeExecutionToFile(fileExe,String.format("\n\t\t\t\t\tTEST Sommet %d\n", ligneSommet[0]));
                 for (G2_Tache tache : graphe.getGraph_tach()) {
                     int Pred = findRangCalendarInTab(Calendrier, ligneSommet[0]);
                     int Actu = findRangCalendarInTab(Calendrier, tache.getSommet());
                     if (tache.getContrainte().contains(ligneSommet[0])) {
                         System.out.printf("S%d est un prédécesseur de S%d\n", ligneSommet[0], tache.getSommet());
+                        writeExecutionToFile(fileExe,String.format("S%d est un prédécesseur de S%d\n", ligneSommet[0], tache.getSommet()));
                         int delaisPred = findSommetInGraphe(graphe,ligneSommet[0]).getDelai();
                         if (Calendrier[Actu][1] < (Calendrier[Pred][1] + delaisPred)) {
                             System.out.printf("S%d_Date+tot = %d < S%d_Date+tot %d + délais %d ", Calendrier[Actu][0], Calendrier[Actu][1], Calendrier[Pred][0], Calendrier[Pred][1], delaisPred);
                             System.out.printf("==> S%d_Date+tot = %d\n", Calendrier[Actu][0], (Calendrier[Pred][1] + delaisPred));
+                            writeExecutionToFile(fileExe,String.format("S%d_Date+tot = %d < S%d_Date+tot %d + délais %d ", Calendrier[Actu][0], Calendrier[Actu][1], Calendrier[Pred][0], Calendrier[Pred][1], delaisPred));
+                            writeExecutionToFile(fileExe,String.format("==> S%d_Date+tot = %d\n", Calendrier[Actu][0], (Calendrier[Pred][1] + delaisPred)));
                             Calendrier[Actu][1] = Calendrier[Pred][1] + delaisPred;
                         }
                         if (findSommetInGraphe(graphe,Calendrier[Pred][0]).getContrainte().size() == 0) {
@@ -568,6 +595,8 @@ public class G2_Main {
 
         System.out.println("\n\n\t* Calcul des dates au plus tard *");
         System.out.println("\n!!! Pour des raisons de programmation les délais au plus tard sont initialisé à 999 !!!");
+        writeExecutionToFile(fileExe,"\n\n\t* Calcul des dates au plus tard *");
+        writeExecutionToFile(fileExe,"\n\n!!! Pour des raisons de programmation les délais au plus tard sont initialisé à 999 !!!\n");
 
         // FIN
         Calendrier[Calendrier.length-1][2] = Calendrier[Calendrier.length-1][1]; // Date au plus tard = Date au plus tard;
@@ -589,21 +618,23 @@ public class G2_Main {
         while (successeursExiste(successeurs)) {
             for (int j = successeurs.size() - 1; j >= 0; j--) {
                 if (!successeurs.get(j).getSuccesseurs().isEmpty()) {
-//                    System.out.println("on est dans le 1er if ----------");
                     int actu = findRangCalendarInTab(Calendrier, successeurs.get(j).getSommet());
                     int actuDelais = findSommetInGraphe(graphe, successeurs.get(j).getSommet()).getDelai();
                     for (int l = 0; l < successeurs.get(j).getSuccesseurs().size(); l++) {
-//                        System.out.println("on est dans le 2eme for l=" + l);
                         int succ = findRangCalendarInTab(Calendrier, successeurs.get(j).getSuccesseurs().get(l));
                         int succINsucces = findSuccesseur(successeurs, successeurs.get(j).getSuccesseurs().get(l));
                         if (Calendrier[actu][2] > (Calendrier[succ][2] - actuDelais)) {
                             System.out.printf("\nS%d_Date+tard = %d > S%d_Date+tard %d - délais %d ", Calendrier[actu][0], Calendrier[actu][2], Calendrier[succ][0], Calendrier[succ][2], actuDelais);
                             System.out.printf("==> S%d_Date+tard = %d\n", Calendrier[actu][0], (Calendrier[succ][2] - actuDelais));
+                            writeExecutionToFile(fileExe,String.format("\nS%d_Date+tard = %d > S%d_Date+tard %d - délais %d ", Calendrier[actu][0], Calendrier[actu][2], Calendrier[succ][0], Calendrier[succ][2], actuDelais));
+                            writeExecutionToFile(fileExe,String.format("==> S%d_Date+tard = %d\n", Calendrier[actu][0], (Calendrier[succ][2] - actuDelais)));
                             Calendrier[actu][2] = (Calendrier[succ][2] - actuDelais);
                         }
                         if (Calendrier[actu][4] > (Calendrier[succ][1]-Calendrier[actu][1]-actuDelais)) {
                             System.out.printf("\nS%d_Marge.L = %d > S%d_Date+tot.s %d - S%d_Date+tot.a %d - délais.a %d ", Calendrier[actu][0], Calendrier[actu][4], Calendrier[succ][0], Calendrier[succ][1], Calendrier[actu][0], Calendrier[actu][1], actuDelais);
                             System.out.printf("==> S%d_Marge.L = %d\n", Calendrier[actu][0], ((Calendrier[succ][1]-Calendrier[actu][1]-actuDelais)));
+                            writeExecutionToFile(fileExe,String.format("\nS%d_Marge.L = %d > S%d_Date+tot.s %d - S%d_Date+tot.a %d - délais.a %d ", Calendrier[actu][0], Calendrier[actu][4], Calendrier[succ][0], Calendrier[succ][1], Calendrier[actu][0], Calendrier[actu][1], actuDelais));
+                            writeExecutionToFile(fileExe,String.format("==> S%d_Marge.L = %d\n", Calendrier[actu][0], ((Calendrier[succ][1]-Calendrier[actu][1]-actuDelais))));
                             Calendrier[actu][4] = (Calendrier[succ][1]-Calendrier[actu][1]-actuDelais);
                         }
                         if (successeurs.get(succINsucces).getSuccesseurs().size() == 0) {
@@ -644,6 +675,8 @@ public class G2_Main {
 
         System.out.println("\n\t\t*** Calendrier final ***\n");
         System.out.printf("%6s %8s %9s %12s %11s\n", "Sommet", "Date+tot", "Date+tard", "Marge totale", "Marge libre");
+        writeExecutionToFile(fileExe,"\n\t\t*** Calendrier final ***\n");
+        writeExecutionToFile(fileExe,String.format("%6s %8s %9s %12s %11s\n", "Sommet", "Date+tot", "Date+tard", "Marge totale", "Marge libre"));
         for (int k = 0; k < Calendrier.length; k++) {
             if (Calendrier[k][0] == 0) {
                 Calendrier[k][3] = 0;   // Marge totale DEBUT
@@ -652,6 +685,7 @@ public class G2_Main {
                 Calendrier[k][3] = (Calendrier[k][2] - Calendrier[k][1]); // Marge totale
             }
             System.out.printf("%6d %8d %9d %12d %11d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2], Calendrier[k][3], Calendrier[k][4]);
+            writeExecutionToFile(fileExe,String.format("%6d %8d %9d %12d %11d\n", Calendrier[k][0], Calendrier[k][1], Calendrier[k][2], Calendrier[k][3], Calendrier[k][4]));
         }
         return Calendrier;
     }
@@ -672,10 +706,6 @@ public class G2_Main {
                 }
             }
         }
-
-//        for (Successeur su : successeurs) {
-//            System.out.print(su);
-//        }
         return successeurs;
     }
     private static int findSuccesseur(List<G2_Successeur> suc, int sommet) {
@@ -697,13 +727,14 @@ public class G2_Main {
         return false;
     }
 
-    private static void cheminCritique (G2_Graphe graphe, int choix, String mem_file, String name_file) {
+    private static void cheminCritique (G2_Graphe graphe, int choix, String mem_file, String name_file, String fileExe) {
         List<G2_Successeur> successeurs = createSuccesseur(graphe);
         List<Integer> chemin = new ArrayList<>();
-        int[][] Calendrier = calendrier(graphe, choix, mem_file, name_file);
+        int[][] Calendrier = calendrier(graphe, choix, mem_file, name_file, fileExe);
         boolean TestAjout;
         int last_sommet;
         System.out.println("\n\t\t*** Chemin critique ***\n");
+        writeExecutionToFile(fileExe,"\n\t\t*** Chemin critique ***\n");
 
         chemin.add(0);
         // While : tant que le dernier point n'est pas Fin, ici la taille de notre graphe
@@ -714,17 +745,20 @@ public class G2_Main {
                 // if : si le successeur à sa marge totale = 0 on le choisit
                 if (Calendrier[findRangCalendarInTab(Calendrier, s)][3] == 0) {
                     System.out.printf("La marge totale de %d = 0 on ajoute le point %d au chemin critique\n", s, s);
+                    writeExecutionToFile(fileExe,String.format("La marge totale de %d = 0 on ajoute le point %d au chemin critique\n", s, s));
                     chemin.add(s);
                     TestAjout = true;
                 }
             }
             if (!TestAjout) {
                 System.out.println("on ne peux ajouter aucun point il faut reculer");
+                writeExecutionToFile(fileExe,"on ne peux ajouter aucun point il faut reculer");
                 last_sommet = chemin.get(chemin.size()-1);
                 chemin.remove(chemin.size()-1);
                 successeurs.get(findSuccesseur(successeurs, chemin.get(chemin.size()-1))).getSuccesseurs().remove((Integer) last_sommet);
             }
         }
         System.out.println("\n\n* Un chemin critique possible *\n\t" + chemin);
+        writeExecutionToFile(fileExe,"\n\n* Un chemin critique possible *\n\t" + chemin);
     }
 }

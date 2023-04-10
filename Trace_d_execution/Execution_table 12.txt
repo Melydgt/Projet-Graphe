@@ -1,0 +1,103 @@
+		*** Load Graphe ***
+Graphe : 
+   Tache |    délai |      contrainte
+[
+       1 |       10 |             [0], 
+       2 |       10 |             [0], 
+       3 |        9 |      [1, 2, 10], 
+       4 |        5 |          [1, 2], 
+       5 |        4 |             [4], 
+       6 |        2 |             [5], 
+       7 |        2 |             [4], 
+       8 |        4 |       [5, 7, 9], 
+       9 |        8 |          [3, 4], 
+      10 |       12 |             [9], 
+      11 |        2 |      [6, 8, 10], 
+      12 |       20 |          [1, 6], 
+      13 |        0 |        [11, 12]]
+
+		*** Affichage chemin du graphe ***
+  Chemins   = Délais
+  0 --> 1   = 10 
+  0 --> 2   = 10 
+  1 --> 3   = 9  
+  2 --> 3   = 9  
+ 10 --> 3   = 9  
+  1 --> 4   = 5  
+  2 --> 4   = 5  
+  4 --> 5   = 4  
+  5 --> 6   = 2  
+  4 --> 7   = 2  
+  5 --> 8   = 4  
+  7 --> 8   = 4  
+  9 --> 8   = 4  
+  3 --> 9   = 8  
+  4 --> 9   = 8  
+  9 --> 10  = 12 
+  6 --> 11  = 2  
+  8 --> 11  = 2  
+ 10 --> 11  = 2  
+  1 --> 12  = 20 
+  6 --> 12  = 20 
+ 11 --> 13  = 0  
+ 12 --> 13  = 0  
+Il y a 13 sommets et 23 arcs
+
+		*** Matrice des valeur ***
+       0   1   2   3   4   5   6   7   8   9  10  11  12  13
+   0   *   0   0   *   *   *   *   *   *   *   *   *   *   *
+   1   *   *   *   1   1   *   *   *   *   *   *   *   1   *
+   2   *   *   *   2   2   *   *   *   *   *   *   *   *   *
+   3   *   *   *   *   *   *   *   *   *   3   *   *   *   *
+   4   *   *   *   *   *   4   *   4   *   4   *   *   *   *
+   5   *   *   *   *   *   *   5   *   5   *   *   *   *   *
+   6   *   *   *   *   *   *   *   *   *   *   *   6   6   *
+   7   *   *   *   *   *   *   *   *   7   *   *   *   *   *
+   8   *   *   *   *   *   *   *   *   *   *   *   8   *   *
+   9   *   *   *   *   *   *   *   *   9   *   9   *   *   *
+  10   *   *   *  10   *   *   *   *   *   *   *  10   *   *
+  11   *   *   *   *   *   *   *   *   *   *   *   *   *  11
+  12   *   *   *   *   *   *   *   *   *   *   *   *   *  12
+  13   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+Point d'entrée : 0	Point de sorties : 13
+
+Présence de circuit dans le graphe ? 
+		*** Detection de circuit ***
+	* Méthode d'élimination des points d'entrée *
+
+					TEST Sommet = 1
+Point d'entrée : 1
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 2
+Point d'entrée : 2
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 3
+					TEST Sommet = 4
+Point d'entrée : 4
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 5
+Point d'entrée : 5
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 6
+Point d'entrée : 6
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 7
+Point d'entrée : 7
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 8
+					TEST Sommet = 9
+					TEST Sommet = 10
+					TEST Sommet = 11
+					TEST Sommet = 12
+Point d'entrée : 12
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 13
+Le graphe contient un circuit (boucle). 

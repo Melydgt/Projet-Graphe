@@ -1,0 +1,383 @@
+		*** Load Graphe ***
+Graphe : 
+   Tache |    délai |      contrainte
+[
+       1 |        2 |             [0], 
+       2 |        5 |             [0], 
+       3 |        4 |             [1], 
+       4 |        1 |             [3], 
+       5 |        9 |       [4, 6, 8], 
+       6 |        2 |          [1, 2], 
+       7 |        5 |             [6], 
+       8 |        5 |             [7], 
+       9 |        9 |             [8], 
+      10 |        2 |             [9], 
+      11 |       19 |             [6], 
+      12 |        5 |   [7, 8, 9, 10], 
+      13 |        1 |         [6, 11], 
+      14 |        0 |     [5, 12, 13]]
+
+		*** Affichage chemin du graphe ***
+  Chemins   = Délais
+  0 --> 1   = 2  
+  0 --> 2   = 5  
+  1 --> 3   = 4  
+  3 --> 4   = 1  
+  4 --> 5   = 9  
+  6 --> 5   = 9  
+  8 --> 5   = 9  
+  1 --> 6   = 2  
+  2 --> 6   = 2  
+  6 --> 7   = 5  
+  7 --> 8   = 5  
+  8 --> 9   = 9  
+  9 --> 10  = 2  
+  6 --> 11  = 19 
+  7 --> 12  = 5  
+  8 --> 12  = 5  
+  9 --> 12  = 5  
+ 10 --> 12  = 5  
+  6 --> 13  = 1  
+ 11 --> 13  = 1  
+  5 --> 14  = 0  
+ 12 --> 14  = 0  
+ 13 --> 14  = 0  
+Il y a 14 sommets et 23 arcs
+
+		*** Matrice des valeur ***
+       0   1   2   3   4   5   6   7   8   9  10  11  12  13  14
+   0   *   0   0   *   *   *   *   *   *   *   *   *   *   *   *
+   1   *   *   *   1   *   *   1   *   *   *   *   *   *   *   *
+   2   *   *   *   *   *   *   2   *   *   *   *   *   *   *   *
+   3   *   *   *   *   3   *   *   *   *   *   *   *   *   *   *
+   4   *   *   *   *   *   4   *   *   *   *   *   *   *   *   *
+   5   *   *   *   *   *   *   *   *   *   *   *   *   *   *   5
+   6   *   *   *   *   *   6   *   6   *   *   *   6   *   6   *
+   7   *   *   *   *   *   *   *   *   7   *   *   *   7   *   *
+   8   *   *   *   *   *   8   *   *   *   8   *   *   8   *   *
+   9   *   *   *   *   *   *   *   *   *   *   9   *   9   *   *
+  10   *   *   *   *   *   *   *   *   *   *   *   *  10   *   *
+  11   *   *   *   *   *   *   *   *   *   *   *   *   *  11   *
+  12   *   *   *   *   *   *   *   *   *   *   *   *   *   *  12
+  13   *   *   *   *   *   *   *   *   *   *   *   *   *   *  13
+  14   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+Point d'entrée : 0	Point de sorties : 14
+
+Présence de circuit dans le graphe ? 
+		*** Detection de circuit ***
+	* Méthode d'élimination des points d'entrée *
+
+					TEST Sommet = 1
+Point d'entrée : 1
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 2
+Point d'entrée : 2
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 3
+Point d'entrée : 3
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 4
+Point d'entrée : 4
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 5
+					TEST Sommet = 6
+Point d'entrée : 6
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 7
+Point d'entrée : 7
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 8
+Point d'entrée : 8
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 9
+Point d'entrée : 9
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 10
+Point d'entrée : 10
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 11
+Point d'entrée : 11
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 12
+Point d'entrée : 12
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 13
+Point d'entrée : 13
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 14
+					TEST Sommet = 5
+Point d'entrée : 5
+Suppression des points d'entrée. Il reste des sommets ...
+
+					TEST Sommet = 14
+Point d'entrée : 14
+Suppression des points d'entrée. 
+Le graphe NE contient PAS de circuit. Le circuit NE contient PAS d'arc négatif
+
+		*** Calcul de rang ***
+Le sommet 1 est un prédécesseur de S3 et il n'a plus d'autre antécédents on supprime le sommet  1es contraintes
+S3 prends le rang : 1
+Le sommet 1 est un prédécesseur de S6 et il n'a plus d'autre antécédents on supprime le sommet  1es contraintes
+S6 prends le rang : 1
+Le sommet 2 est un prédécesseur de S6 et il n'a plus d'autre antécédents on supprime le sommet  2es contraintes
+S6 prends le nouveaux rang : 1
+Le sommet 3 est un prédécesseur de S4 et il n'a plus d'autre antécédents on supprime le sommet  3es contraintes
+S4 prends le rang : 2
+Le sommet 6 est un prédécesseur de S5 et il n'a plus d'autre antécédents on supprime le sommet  6es contraintes
+S5 prends le rang : 2
+Le sommet 6 est un prédécesseur de S7 et il n'a plus d'autre antécédents on supprime le sommet  6es contraintes
+S7 prends le rang : 2
+Le sommet 6 est un prédécesseur de S11 et il n'a plus d'autre antécédents on supprime le sommet  6es contraintes
+S11 prends le rang : 2
+Le sommet 6 est un prédécesseur de S13 et il n'a plus d'autre antécédents on supprime le sommet  6es contraintes
+S13 prends le rang : 2
+Le sommet 4 est un prédécesseur de S5 et il n'a plus d'autre antécédents on supprime le sommet  4es contraintes
+S5 prends le nouveaux rang : 3
+Le sommet 7 est un prédécesseur de S8 et il n'a plus d'autre antécédents on supprime le sommet  7es contraintes
+S8 prends le rang : 3
+Le sommet 7 est un prédécesseur de S12 et il n'a plus d'autre antécédents on supprime le sommet  7es contraintes
+S12 prends le rang : 3
+Le sommet 11 est un prédécesseur de S13 et il n'a plus d'autre antécédents on supprime le sommet  11es contraintes
+S13 prends le nouveaux rang : 3
+Le sommet 13 est un prédécesseur de S14 et il n'a plus d'autre antécédents on supprime le sommet  13es contraintes
+Le sommet 8 est un prédécesseur de S5 et il n'a plus d'autre antécédents on supprime le sommet  8es contraintes
+S5 prends le nouveaux rang : 4
+Le sommet 8 est un prédécesseur de S9 et il n'a plus d'autre antécédents on supprime le sommet  8es contraintes
+S9 prends le rang : 4
+Le sommet 8 est un prédécesseur de S12 et il n'a plus d'autre antécédents on supprime le sommet  8es contraintes
+S12 prends le nouveaux rang : 4
+Le sommet 9 est un prédécesseur de S10 et il n'a plus d'autre antécédents on supprime le sommet  9es contraintes
+S10 prends le rang : 5
+Le sommet 9 est un prédécesseur de S12 et il n'a plus d'autre antécédents on supprime le sommet  9es contraintes
+S12 prends le nouveaux rang : 5
+Le sommet 10 est un prédécesseur de S12 et il n'a plus d'autre antécédents on supprime le sommet  10es contraintes
+S12 prends le nouveaux rang : 6
+Le sommet 5 est un prédécesseur de S14 et il n'a plus d'autre antécédents on supprime le sommet  5es contraintes
+Le sommet 12 est un prédécesseur de S14 et il n'a plus d'autre antécédents on supprime le sommet  12es contraintes
+
+* Liste des rangs des sommets *
+Sommet Rang
+S1     0   
+S2     0   
+S3     1   
+S6     1   
+S4     2   
+S5     4   
+S7     2   
+S11    2   
+S13    3   
+S8     3   
+S12    6   
+S9     4   
+S10    5   
+
+		*** Calendrier ***
+	* Calcul des dates au plus tot *
+					TEST Sommet 0
+
+					TEST Sommet 1
+S1 est un prédécesseur de S3
+S3_Date+tot = 0 < S1_Date+tot 0 + délais 2 ==> S3_Date+tot = 2
+S1 est un prédécesseur de S6
+S6_Date+tot = 0 < S1_Date+tot 0 + délais 2 ==> S6_Date+tot = 2
+
+					TEST Sommet 2
+S2 est un prédécesseur de S6
+S6_Date+tot = 2 < S2_Date+tot 0 + délais 5 ==> S6_Date+tot = 5
+
+					TEST Sommet 3
+S3 est un prédécesseur de S4
+S4_Date+tot = 0 < S3_Date+tot 2 + délais 4 ==> S4_Date+tot = 6
+
+					TEST Sommet 4
+S4 est un prédécesseur de S5
+S5_Date+tot = 0 < S4_Date+tot 6 + délais 1 ==> S5_Date+tot = 7
+
+					TEST Sommet 5
+S5 est un prédécesseur de S14
+S14_Date+tot = 0 < S5_Date+tot 7 + délais 9 ==> S14_Date+tot = 16
+
+					TEST Sommet 6
+S6 est un prédécesseur de S5
+S6 est un prédécesseur de S7
+S7_Date+tot = 0 < S6_Date+tot 5 + délais 2 ==> S7_Date+tot = 7
+S6 est un prédécesseur de S11
+S11_Date+tot = 0 < S6_Date+tot 5 + délais 2 ==> S11_Date+tot = 7
+S6 est un prédécesseur de S13
+S13_Date+tot = 0 < S6_Date+tot 5 + délais 2 ==> S13_Date+tot = 7
+
+					TEST Sommet 7
+S7 est un prédécesseur de S8
+S8_Date+tot = 0 < S7_Date+tot 7 + délais 5 ==> S8_Date+tot = 12
+S7 est un prédécesseur de S12
+S12_Date+tot = 0 < S7_Date+tot 7 + délais 5 ==> S12_Date+tot = 12
+
+					TEST Sommet 8
+S8 est un prédécesseur de S5
+S5_Date+tot = 7 < S8_Date+tot 12 + délais 5 ==> S5_Date+tot = 17
+S8 est un prédécesseur de S9
+S9_Date+tot = 0 < S8_Date+tot 12 + délais 5 ==> S9_Date+tot = 17
+S8 est un prédécesseur de S12
+S12_Date+tot = 12 < S8_Date+tot 12 + délais 5 ==> S12_Date+tot = 17
+
+					TEST Sommet 9
+S9 est un prédécesseur de S10
+S10_Date+tot = 0 < S9_Date+tot 17 + délais 9 ==> S10_Date+tot = 26
+S9 est un prédécesseur de S12
+S12_Date+tot = 17 < S9_Date+tot 17 + délais 9 ==> S12_Date+tot = 26
+
+					TEST Sommet 10
+S10 est un prédécesseur de S12
+S12_Date+tot = 26 < S10_Date+tot 26 + délais 2 ==> S12_Date+tot = 28
+
+					TEST Sommet 11
+S11 est un prédécesseur de S13
+S13_Date+tot = 7 < S11_Date+tot 7 + délais 19 ==> S13_Date+tot = 26
+
+					TEST Sommet 12
+S12 est un prédécesseur de S14
+S14_Date+tot = 16 < S12_Date+tot 28 + délais 5 ==> S14_Date+tot = 33
+
+					TEST Sommet 13
+S13 est un prédécesseur de S14
+
+					TEST Sommet 14
+
+					TEST Sommet 0
+
+					TEST Sommet 1
+
+					TEST Sommet 2
+
+					TEST Sommet 3
+
+					TEST Sommet 4
+
+					TEST Sommet 5
+S5 est un prédécesseur de S14
+
+					TEST Sommet 6
+
+					TEST Sommet 7
+
+					TEST Sommet 8
+
+					TEST Sommet 9
+
+					TEST Sommet 10
+
+					TEST Sommet 11
+
+					TEST Sommet 12
+
+					TEST Sommet 13
+
+					TEST Sommet 14
+
+
+	* Calcul des dates au plus tard *
+
+!!! Pour des raisons de programmation les délais au plus tard sont initialisé à 999 !!!
+
+S13_Date+tard = 999 > S14_Date+tard 33 - délais 1 ==> S13_Date+tard = 32
+
+S13_Marge.L = 999 > S14_Date+tot.s 33 - S13_Date+tot.a 26 - délais.a 1 ==> S13_Marge.L = 6
+
+S12_Date+tard = 999 > S14_Date+tard 33 - délais 5 ==> S12_Date+tard = 28
+
+S12_Marge.L = 999 > S14_Date+tot.s 33 - S12_Date+tot.a 28 - délais.a 5 ==> S12_Marge.L = 0
+
+S11_Date+tard = 999 > S13_Date+tard 32 - délais 19 ==> S11_Date+tard = 13
+
+S11_Marge.L = 999 > S13_Date+tot.s 26 - S11_Date+tot.a 7 - délais.a 19 ==> S11_Marge.L = 0
+
+S10_Date+tard = 999 > S12_Date+tard 28 - délais 2 ==> S10_Date+tard = 26
+
+S10_Marge.L = 999 > S12_Date+tot.s 28 - S10_Date+tot.a 26 - délais.a 2 ==> S10_Marge.L = 0
+
+S9_Date+tard = 999 > S10_Date+tard 26 - délais 9 ==> S9_Date+tard = 17
+
+S9_Marge.L = 999 > S10_Date+tot.s 26 - S9_Date+tot.a 17 - délais.a 9 ==> S9_Marge.L = 0
+
+S8_Date+tard = 999 > S5_Date+tard 999 - délais 5 ==> S8_Date+tard = 994
+
+S8_Marge.L = 999 > S5_Date+tot.s 17 - S8_Date+tot.a 12 - délais.a 5 ==> S8_Marge.L = 0
+
+S8_Date+tard = 994 > S9_Date+tard 17 - délais 5 ==> S8_Date+tard = 12
+
+S7_Date+tard = 999 > S8_Date+tard 12 - délais 5 ==> S7_Date+tard = 7
+
+S7_Marge.L = 999 > S8_Date+tot.s 12 - S7_Date+tot.a 7 - délais.a 5 ==> S7_Marge.L = 0
+
+S6_Date+tard = 999 > S5_Date+tard 999 - délais 2 ==> S6_Date+tard = 997
+
+S6_Marge.L = 999 > S5_Date+tot.s 17 - S6_Date+tot.a 5 - délais.a 2 ==> S6_Marge.L = 10
+
+S6_Date+tard = 997 > S7_Date+tard 7 - délais 2 ==> S6_Date+tard = 5
+
+S6_Marge.L = 10 > S7_Date+tot.s 7 - S6_Date+tot.a 5 - délais.a 2 ==> S6_Marge.L = 0
+
+S5_Date+tard = 999 > S14_Date+tard 33 - délais 9 ==> S5_Date+tard = 24
+
+S5_Marge.L = 999 > S14_Date+tot.s 33 - S5_Date+tot.a 17 - délais.a 9 ==> S5_Marge.L = 7
+
+S4_Date+tard = 999 > S5_Date+tard 24 - délais 1 ==> S4_Date+tard = 23
+
+S4_Marge.L = 999 > S5_Date+tot.s 17 - S4_Date+tot.a 6 - délais.a 1 ==> S4_Marge.L = 10
+
+S3_Date+tard = 999 > S4_Date+tard 23 - délais 4 ==> S3_Date+tard = 19
+
+S3_Marge.L = 999 > S4_Date+tot.s 6 - S3_Date+tot.a 2 - délais.a 4 ==> S3_Marge.L = 0
+
+S2_Date+tard = 999 > S6_Date+tard 5 - délais 5 ==> S2_Date+tard = 0
+
+S2_Marge.L = 999 > S6_Date+tot.s 5 - S2_Date+tot.a 0 - délais.a 5 ==> S2_Marge.L = 0
+
+S1_Date+tard = 999 > S3_Date+tard 19 - délais 2 ==> S1_Date+tard = 17
+
+S1_Marge.L = 999 > S3_Date+tot.s 2 - S1_Date+tot.a 0 - délais.a 2 ==> S1_Marge.L = 0
+
+S1_Date+tard = 17 > S6_Date+tard 5 - délais 2 ==> S1_Date+tard = 3
+
+		*** Calendrier final ***
+Sommet Date+tot Date+tard Marge totale Marge libre
+     0        0         0            0           0
+     1        0         3            3           0
+     2        0         0            0           0
+     3        2        19           17           0
+     4        6        23           17          10
+     5       17        24            7           7
+     6        5         5            0           0
+     7        7         7            0           0
+     8       12        12            0           0
+     9       17        17            0           0
+    10       26        26            0           0
+    11        7        13            6           0
+    12       28        28            0           0
+    13       26        32            6           6
+    14       33        33            0           0
+
+		*** Chemin critique ***
+La marge totale de 2 = 0 on ajoute le point 2 au chemin critique
+La marge totale de 6 = 0 on ajoute le point 6 au chemin critique
+La marge totale de 7 = 0 on ajoute le point 7 au chemin critique
+La marge totale de 8 = 0 on ajoute le point 8 au chemin critique
+La marge totale de 12 = 0 on ajoute le point 12 au chemin critique
+La marge totale de 14 = 0 on ajoute le point 14 au chemin critique
+
+
+* Un chemin critique possible *
+	[0, 2, 6, 7, 8, 12, 14]
